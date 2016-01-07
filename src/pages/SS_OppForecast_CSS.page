@@ -1,0 +1,541 @@
+<!--
+Copyright (c) 2014, salesforce.com, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    * Neither the name of the salesforce.com, Inc. nor the names of its contributors 
+    may be used to endorse or promote products derived from this software 
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page showHeader="false" contentType="text/css" >
+@font-face {
+    font-family: 'ProximaNovaRegular';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.svg#ProximaNovaRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ProximaNovaLight';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.svg#ProximaNovaLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ProximaNovaSemiBold';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.svg#ProximaNovaSemiBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+  ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 10px; }
+  .sortable li { margin-left:100px; margin-top: 5px; padding: 5px; /* width: 950px; */ width: 88%; }
+  .sortable { background: #1797c0; min-height:50px; padding-top: 5px;}
+  .spanClass { color: white; top: 12%; margin-left: 0px !important; font-size: 16px; letter-spacing: 1px; font-weight: 100;}
+  
+  .listclass li {
+      float:left;
+  
+  }
+
+
+/********* Popup Style **********/
+
+
+  .edit_overlay { 
+    display: none;
+    padding-top: 60px;
+    color: white;
+    font-family: ProximaNovaLight, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 200;
+  }
+
+  .edit_overlay select {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .overlay_title { font-size: 16px; text-align: center; margin-bottom: 15px; }
+  #seleted_opp { 
+      background-color: rgba(0, 0, 0, 0.28); 
+      padding: 10px;
+      margin: 20px 0;
+  }
+  .update_opp_wrap { 
+      background-color: rgba(0, 0, 0, 0.28);
+      padding: 15px;
+      margin: 20px 0;
+  }
+  
+
+  #update_opp_btn {
+    font-family: ProximaNovaSemiBold, Arial, sans-serif;
+    width: 91%;
+    background: #2a94d6;
+    text-align: center;
+    padding: 7px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  #update_opp_btn:hover, #update_opp_btn:active { background: #1378b7; cursor: pointer; }
+
+
+/********* End Popup Style **********/
+  
+  #MainContent {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin:0 auto;
+      margin-top: 10px;
+      /* width: 1100px; */
+      max-width: 1100px;
+  }
+  
+  #MainContent a{
+      text-decoration:none;
+      /*font-size:15px;
+      color:black;*/
+  }
+  
+  /* #MainContent input {
+      float:right;
+      height: 10px; 
+
+  }
+  
+    #MainContent a:active{
+  
+      text-decoration:none;
+      color:lightgreen;
+  }
+   */
+  
+  #MainContent p a {
+color: grey;
+font-weight: 200;
+text-transform: uppercase;
+font-size: 15px; 
+}
+
+.month_wrap { position: relative; padding-top: 10px; }
+
+  ul.sortable.ui-sortable {
+padding-bottom: 20px;
+max-width: 1100px;
+}
+
+li.ui-state-default {
+background: white;
+}
+
+.headingList li {
+   
+    float:left;
+    margin: 0 10px 0 0;
+    /*width: 100px;*/
+    width: 9%;
+}
+
+.headingList li.li_forecast { /* width: 140px; */ width: 12.5%; }
+.headingList li.li_account  { /* width: 160px; */ width: 14%; }
+.headingList li.li_edit { display: none; }
+
+.headingList {  
+
+    position:absolute; 
+    margin-left: 160px;
+    color: #1797c0;
+    font-size: 16px;
+    margin-top: -40px;
+    letter-spacing: 1px;
+    font-weight: 100;
+
+    width: 100%;
+}
+
+#January, #February, #March, #April, #May, #June, #July, #August, #September, #October, #November, #December {
+    display:none;
+}
+
+/* draggable opps styling */
+
+.linkClass {
+  margin-right:10px;
+  float: left;
+  width: 50px;
+  font-size: 18px;
+  min-height: 1px;
+}
+
+.onameClass {
+margin-right:10px;
+float: left;
+width: 10%;
+    min-height: 1px;
+}
+.anameClass {
+margin-right:10px;
+float: left;
+min-height: 1px;
+width: 16%;
+}
+
+.prodClass {
+margin-right:10px;
+float: left;
+min-height: 1px;
+width: 10%;
+}
+
+.forenameClass {
+  margin-right:10px;
+float: left;
+min-height: 1px;
+width: 10%;
+}
+
+.dateClass {
+float: left;
+min-height: 1px;
+width: 10%;
+margin-right:10px;
+}
+
+.inputClass {
+float: left;
+min-height: 1px;
+width: 10%;
+margin-right:10px;
+}
+
+.amountVar { float: left;
+min-height: 1px;
+width: 12.5%;
+border: 0; 
+margin-top: 0;
+color: #555555;    
+    }
+
+.mobile_edit {
+float: right;
+font-size: 22px;
+color: rgb(65, 84, 105);
+display: none;
+    min-height: 1px;
+}
+
+/* clear any floats in sortable */
+li.ui-state-default:after {
+  display: table;
+  content: "";
+  clear: both;
+}
+
+
+
+
+/* sortable fading bgs */
+
+div#Closed .sortable {
+  background: rgba(23,151,192, 1);
+}
+div#Commit .sortable {
+  background: rgba(23,151,192, .8);
+}
+div#BestCase .sortable {
+  background: rgba(23,151,192, .6);
+}
+div#Best Case .sortable {
+  background: rgba(23,151,192, .6) !important;
+}
+div#Pipeline .sortable {
+  background: rgba(23,151,192, .4);
+}
+div#Omitted .sortable {
+  background: rgba(23,151,192, .1);
+}
+div#Omitted .sortable .spanClass {
+  color: grey;
+}
+
+.highlight_cell { /* background: rgba(75,255,69, .7); */ box-shadow: 0px 0px 10px 0px green;}
+
+
+.ui-state-default { border: 0; }
+.ui-state-default a {
+
+    margin-right:10px;
+    color: rgb(28, 219, 166) !important;
+}
+
+
+ul.sortable.ui-sortable {
+position: relative;
+}
+
+li.spanClass{
+    position:absolute;
+    top:0px;
+    width:100px;
+}
+
+.sf1-header { display: none; }
+
+/* Media Queries */
+
+    @media only screen and (max-width: 1180px) {
+        
+    }
+
+    @media only screen and (max-width: 960px) {
+        
+    }
+
+    @media only screen and (max-width: 767px) {
+        
+    }
+
+    @media only screen and (max-width: 480px) {
+        /* #MainContent { display: none; } */
+
+        body { background: #f0f1f2; }
+
+        .sf1-header { 
+          display: block;
+          position: relative;
+          font-family: ProximaNovaLight, Arial, sans-serif;
+          color: white;
+          background-color: #344a5f;
+          padding: 14px 0;
+          margin-bottom: 15px;
+        }
+
+        .sf1-header h1 {
+          padding-left: 14px;
+          font-family: ProximaNovaRegular, Arial, sans-serif;
+          font-size: 16px;
+            font-weight: normal;
+            position:relative;
+            top: 2px;
+        }
+
+        .sf1-header h1::before {
+          /* background-image: url(https://sfdc-styleguide.herokuapp.com/assets/icons/standard/opportunity.svg); */
+          background-image: url({!URLFOR($Resource.forecastResources,'/calibration.svg')});
+          content: "";
+          display: inline-block;
+          vertical-align: middle;
+          background-size: 100%;
+          background-repeat: no-repeat;
+          background-position: 50%;
+          border-radius: 3px;
+          width: 30px;
+          height: 30px;
+          left: 0;
+          top: 0;
+          margin-right: 10px;
+    		position:relative;
+            top: -2px;
+        }
+
+        .sf1-wrapper { padding: 10px;}
+        .sf1-card { border: 1px solid #dfe0e1; border-radius: 5px; margin-bottom: 15px; }
+
+        #graphs { /* width: 320px !important; */ width: 100%; border-radius: 5px; }
+
+        #MainContent { /* max-width: 320px; */ margin: 0; font-family: ProximaNovaLight, Arial, sans-serif;}
+        #MainContent p { padding: 10px 0; margin: 5px 0; background: rgb(65, 84, 105); }
+        #MainContent p:first-child { margin-top: 0; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+        #MainContent p a { font-size: 12px; font-weight: 300; margin-left: 5px; color: white; }
+
+        ul.sortable.ui-sortable { padding-top: 30px; }
+        .sortable li { /* margin-left: 90px; width: 65%; */ margin: 5px auto; width: 90.5%; font-size: 14px; font-weight: 200; }
+
+        .month_wrap { padding-top: 0; }
+
+        /* ul.headingList { margin-left: 85px; font-size: 14px; font-weight: 200; } */
+        ul.headingList {
+            font-size: 14px;
+            font-weight: 200;
+            z-index: 989999;
+            position: static;
+            margin: 0;
+            padding-bottom: 25px;
+            letter-spacing: 0px;
+        }
+        ul.headingList li.li_account { /* width: 100px; */  width: 45%; margin-left: 4%; margin-right: 10px;}
+        ul.headingList li.li_edit { display: block; width: 40px; margin-right: 0; float: right; }
+
+        .spanClass {  font-size: 14px; font-weight: 300; letter-spacing: 0px;}
+        li.spanClass { width: 24%; }
+
+        ul.headingList li:nth-child(1), 
+        ul.headingList li:nth-child(3),
+        ul.headingList li:nth-child(4),
+        ul.headingList li:nth-child(5),
+        ul.headingList li:nth-child(7) { display: none; }
+
+        /* ul.headingList li:nth-child(2),  same as li.li_account  */
+        ul.headingList li:nth-child(6) { margin-right: 0; padding-right: 0; width: 25%; }
+
+        .sortable.ui-sortable li.ui-state-default span.onameClass, 
+        .sortable.ui-sortable li.ui-state-default span.prodClass,
+        .sortable.ui-sortable li.ui-state-default span.dateClass,
+        .sortable.ui-sortable li.ui-state-default span.inputClass,
+        .sortable.ui-sortable li.ui-state-default input.amountVar { display: none; }
+
+        .sortable.ui-sortable li.ui-state-default span.anameClass { width: 50%; }
+        .sortable.ui-sortable li.ui-state-default span.forenameClass { width: 25%; margin-right: 0; }
+        .mobile_edit {
+          float: right;
+          font-size: 22px;
+          color: rgb(65, 84, 105);
+          display: block;
+        }
+
+        a.linkClass { display: none; }
+    }
+              
+    @media only screen and (max-width: 320px) {
+        /*.sf1-card  { width: 298px; }
+        .sf1-card iframe { width: 298px; }*/
+    }
+    
+    @media only screen 
+        and (min-device-width : 768px) 
+        and (max-device-width : 1024px)
+        and (-webkit-min-device-pixel-ratio: 2) {
+    
+        /* STYLES GO HERE */
+
+        /*div#tabs { max-width: 1024px; }*/
+
+        body { background: #f0f1f2; }
+
+        .sf1-header { 
+          display: block;
+          position: relative;
+          font-family: ProximaNovaLight, Arial, sans-serif;
+          color: white;
+          background-color: #344a5f;
+          padding: 14px 0;
+          margin-bottom: 15px;
+        }
+
+        .sf1-header h1 {
+          padding-left: 14px;
+          font-family: ProximaNovaRegular, Arial, sans-serif;
+          font-size: 16px;
+            font-weight: normal;
+    		position:relative;
+            top: 2px;
+        }
+
+        .sf1-header h1::before {
+            background-image: url({!URLFOR($Resource.forecastResources,'/calibration.svg')});
+          content: "";
+          display: inline-block;
+          vertical-align: middle;
+          background-size: 100%;
+          background-repeat: no-repeat;
+          background-position: 50%;
+          border-radius: 3px;
+          width: 30px;
+          height: 30px;
+          left: 0;
+          top: 0;
+          margin-right: 10px;
+    		position:relative;
+            top: -2px;
+        }
+
+        .sf1-wrapper { padding: 10px;}
+        .sf1-card { border: 1px solid #dfe0e1; border-radius: 5px; margin-bottom: 15px; }
+
+        #graphs { width: 100% !important; height: 390px !important; border-radius: 5px;  }
+
+        .headingList {  
+          width: 84%;
+          /* color: rgb(65, 84, 105); */
+          font-weight: 200;
+          letter-spacing: 0px;
+            margin-left: 140px;
+        }
+
+         #MainContent { margin-left: 5px; font-family: ProximaNovaLight, Arial, sans-serif; }
+        #MainContent p a { margin-left: 5px; font-family: ProximaNovaLight, Arial, sans-serif; }
+
+        a.linkClass { font-size: 22px; }
+    
+        .sortable li { font-size: 12px; }
+
+        .headingList li { width: 10%; font-size: 13px; }
+        .headingList li.li_forecast { width: 13.5%; }
+        .headingList li.li_account  { width: 14%; }
+        .headingList li.li_edit { display: block; width: 6%; }
+
+        li.spanClass { width: 9%; font-weight: 200; letter-spacing: 0px; font-size: 14px;}
+
+        .sortable.ui-sortable li.ui-state-default { margin-left: 75px; }
+        
+        .sortable.ui-sortable li.ui-state-default span.onameClass, 
+        .sortable.ui-sortable li.ui-state-default span.prodClass,
+        .sortable.ui-sortable li.ui-state-default span.dateClass,
+        .sortable.ui-sortable li.ui-state-default span.forenameClass { width: 9.25%;}
+
+        .sortable.ui-sortable li.ui-state-default span.inputClass { width: 10%; }
+                   
+        .sortable.ui-sortable li.ui-state-default span.anameClass { width: 14%; }
+        .sortable.ui-sortable li.ui-state-default input.amountVar { width: 13%; padding-left:0; font-size: 12px; font-family: ProximaNovaLight, Arial, sans-serif; }
+        .mobile_edit { display: block; float: left; margin-left: 5px; }
+
+    }    
+/*
+    @media only screen 
+        and (min-device-width : 768px) 
+        and (max-device-width : 1024px)
+        and (orientation : portrait) 
+        and (-webkit-min-device-pixel-ratio: 2) {
+
+          .sortable.ui-sortable li.ui-state-default { font-size: 12px; width: 85%; }
+
+          .headingList li { font-size: 14px; }
+
+          .headingList li.li_forecast { width: 12%; }
+
+          .sortable.ui-sortable li.ui-state-default input.amountVar { width: 10%; font-size: 12px; }
+          .mobile_edit { float: right; }
+    }
+ */       
+</apex:page>

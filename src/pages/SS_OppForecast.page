@@ -1,0 +1,1585 @@
+<!--
+Copyright (c) 2014, salesforce.com, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    * Neither the name of the salesforce.com, Inc. nor the names of its contributors 
+    may be used to endorse or promote products derived from this software 
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page standardController="Opportunity" extensions="SS_GetOpps_Ext" sidebar="false" standardStylesheets="false">
+
+<head>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<script src="{!URLFOR($Resource.SS_SF_Resources, '/scripts/jquery1.11.js')}"/>
+<script src="{!URLFOR($Resource.SS_SF_Resources, '/scripts/jquery-ui-1.10.4.min.js')}"/>
+<script src="{!URLFOR($Resource.bpopup)}" />
+
+<link rel="stylesheet" type="text/css" href="/apex/SS_OppForecast_CSS" />
+
+<script>
+  
+   window.onload = function() {
+   $('.expand-one').click();
+   $('.expand-one1').click();
+   $('.expand-one2').click();
+   $('.expand-one3').click();
+   $('.expand-one4').click();
+   $('.expand-one5').click();
+   $('.expand-one6').click();
+   $('.expand-one7').click();
+   $('.expand-one8').click();
+   $('.expand-one9').click();
+   $('.expand-one10').click();
+   $('.expand-one11').click();
+  }
+  
+  var glob;
+  function updateAmount(e, element) {
+ console.log('in update amount' + element);
+      if (!e) e = window.event;
+    var keyCode = e.keyCode || e.which;
+    if (keyCode == '13'){
+        console.log('Enter pressed');
+      
+    
+      glob = element;
+      var Id = glob.parentNode.children[0].value;
+      //alert(element.parentNode.parentNode.attr('value'));
+      var start = element.parentNode.parentNode.innerHTML.indexOf('Id">');
+      var end = element.parentNode.parentNode.innerHTML.indexOf('</');
+      //var Id = element.parentNode.parentNode.innerHTML.substring(start + 4, end);
+      //alert('Id : ' + Id + ' element value: ' + glob.value);
+      
+      var amount = parseFloat(element.value);
+      $(element).blur();    
+
+
+       SS_GetOpps_Ext.updateAmount(Id, amount,
+                function(results, event) {
+                    if(event.type === 'exception'){
+                        console.log("exception");
+                        console.log(event);
+                    }
+                    else if(event.status){
+                           console.log('updated amount!');
+                           sayHello();
+                       
+                        }
+                    
+                    else{
+                        console.log(event.message);
+                    }
+                }
+            );
+          }  
+
+      
+      
+  
+  }
+  var i = 0;
+  
+    var opps = '<apex:repeat value="{!opps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var opps = opps.split('?');
+    opps.pop();
+    //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* January  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    var Closedopps = '<apex:repeat value="{!Closedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="/{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this);" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var Closedopps = Closedopps.split('?');
+    Closedopps.pop();
+    
+    var BestCaseopps = '<apex:repeat value="{!BestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var BestCaseopps = BestCaseopps.split('?');
+    BestCaseopps.pop();
+    
+    var Pipelineopps = '<apex:repeat value="{!Pipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    //var Pipelineopps = '<apex:repeat value="{!Pipelineopps}" var="o"><span style="visibility:hidden;" id="pipelineId">{!o.Id}</span><ul class="listclass"><li>{!o.Owner.Name}</li><li> {!o.Account.Name}</li> <li> {!o.Product__c} </li> <li> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </li> <li> <input type="text" class="amountVar" onkeyup="updateAmount(this.value)" value="{!o.Amount}"/></li> <li>{!o.SS_Forecast_Category_Name_Management__c}</li><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var Pipelineopps = Pipelineopps.split('?');
+    Pipelineopps.pop();
+    
+    var Omittedopps = '<apex:repeat value="{!Omittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var Omittedopps = Omittedopps.split('?');
+    Omittedopps.pop();
+    
+    //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* February  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var fopps = '<apex:repeat value="{!fopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var fopps = fopps.split('?');
+    fopps.pop();
+    
+    var fClosedopps = '<apex:repeat value="{!fClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var fClosedopps = fClosedopps.split('?');
+    fClosedopps.pop();
+    
+    var fBestCaseopps = '<apex:repeat value="{!fBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var fBestCaseopps = fBestCaseopps.split('?');
+    fBestCaseopps.pop();
+    
+    var fPipelineopps = '<apex:repeat value="{!fPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var fPipelineopps = fPipelineopps.split('?');
+    fPipelineopps.pop();
+    
+    var fOmittedopps = '<apex:repeat value="{!fOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var fOmittedopps = fOmittedopps.split('?');
+    fOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* March  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var mopps = '<apex:repeat value="{!mopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mopps = mopps.split('?');
+    mopps.pop();
+    
+    var mClosedopps = '<apex:repeat value="{!mClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mClosedopps = mClosedopps.split('?');
+    mClosedopps.pop();
+    
+    var mBestCaseopps = '<apex:repeat value="{!mBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mBestCaseopps = mBestCaseopps.split('?');
+    mBestCaseopps.pop();
+    
+    var mPipelineopps = '<apex:repeat value="{!mPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mPipelineopps = mPipelineopps.split('?');
+    mPipelineopps.pop();
+    
+    var mOmittedopps = '<apex:repeat value="{!mOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mOmittedopps = mOmittedopps.split('?');
+    mOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* April  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var aopps = '<apex:repeat value="{!aopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var aopps = aopps.split('?');
+    aopps.pop();
+    
+    var aClosedopps = '<apex:repeat value="{!aClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var aClosedopps = aClosedopps.split('?');
+    aClosedopps.pop();
+    
+    var aBestCaseopps = '<apex:repeat value="{!aBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var aBestCaseopps = aBestCaseopps.split('?');
+    aBestCaseopps.pop();
+    
+    var aPipelineopps = '<apex:repeat value="{!aPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var aPipelineopps = aPipelineopps.split('?');
+    aPipelineopps.pop();
+    
+    var aOmittedopps = '<apex:repeat value="{!aOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var aOmittedopps = aOmittedopps.split('?');
+    aOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* May ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var mayopps = '<apex:repeat value="{!mayopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mayopps = mayopps.split('?');
+    mayopps.pop();
+    
+    var mayClosedopps = '<apex:repeat value="{!mayClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mayClosedopps = mayClosedopps.split('?');
+    mayClosedopps.pop();
+    
+    var mayBestCaseopps = '<apex:repeat value="{!mayBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mayBestCaseopps = mayBestCaseopps.split('?');
+    mayBestCaseopps.pop();
+    
+    var mayPipelineopps = '<apex:repeat value="{!mayPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mayPipelineopps = mayPipelineopps.split('?');
+    mayPipelineopps.pop();
+    
+    var mayOmittedopps = '<apex:repeat value="{!mayOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var mayOmittedopps = mayOmittedopps.split('?');
+    mayOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* June  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var juneopps = '<apex:repeat value="{!juneopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var juneopps = juneopps.split('?');
+    juneopps.pop();
+    
+    var juneClosedopps = '<apex:repeat value="{!juneClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var juneClosedopps = juneClosedopps.split('?');
+    juneClosedopps.pop();
+    
+    var juneBestCaseopps = '<apex:repeat value="{!juneBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var juneBestCaseopps = juneBestCaseopps.split('?');
+    juneBestCaseopps.pop();
+    
+    var junePipelineopps = '<apex:repeat value="{!junePipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var junePipelineopps = junePipelineopps.split('?');
+    junePipelineopps.pop();
+    
+    var juneOmittedopps = '<apex:repeat value="{!juneOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var juneOmittedopps = juneOmittedopps.split('?');
+    juneOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* July  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var julyopps = '<apex:repeat value="{!julyopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var julyopps = julyopps.split('?');
+    julyopps.pop();
+    
+    var julyClosedopps = '<apex:repeat value="{!julyClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var julyClosedopps = julyClosedopps.split('?');
+    julyClosedopps.pop();
+    
+    var julyBestCaseopps = '<apex:repeat value="{!julyBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var julyBestCaseopps = julyBestCaseopps.split('?');
+    julyBestCaseopps.pop();
+    
+    var julyPipelineopps = '<apex:repeat value="{!julyPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var julyPipelineopps = julyPipelineopps.split('?');
+    julyPipelineopps.pop();
+    
+    var julyOmittedopps = '<apex:repeat value="{!julyOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var julyOmittedopps = julyOmittedopps.split('?');
+    julyOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* August  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var augopps = '<apex:repeat value="{!augopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var augopps = augopps.split('?');
+    augopps.pop();
+    
+    var augClosedopps = '<apex:repeat value="{!augClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var augClosedopps = augClosedopps.split('?');
+    augClosedopps.pop();
+    
+    var augBestCaseopps = '<apex:repeat value="{!augBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var augBestCaseopps = augBestCaseopps.split('?');
+    augBestCaseopps.pop();
+    
+    var augPipelineopps = '<apex:repeat value="{!augPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var augPipelineopps = augPipelineopps.split('?');
+    augPipelineopps.pop();
+    
+    var augOmittedopps = '<apex:repeat value="{!augOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var augOmittedopps = augOmittedopps.split('?');
+    augOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* September  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var septopps = '<apex:repeat value="{!septopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var septopps = septopps.split('?');
+    septopps.pop();
+    
+    var septClosedopps = '<apex:repeat value="{!septClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var septClosedopps = septClosedopps.split('?');
+    septClosedopps.pop();
+    
+    var septBestCaseopps = '<apex:repeat value="{!septBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var septBestCaseopps = septBestCaseopps.split('?');
+    septBestCaseopps.pop();
+    
+    var septPipelineopps = '<apex:repeat value="{!septPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var septPipelineopps = septPipelineopps.split('?');
+    septPipelineopps.pop();
+    
+    var septOmittedopps = '<apex:repeat value="{!septOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var septOmittedopps = septOmittedopps.split('?');
+    septOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* October  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var octopps = '<apex:repeat value="{!octopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var octopps = octopps.split('?');
+    octopps.pop();
+    
+    var octClosedopps = '<apex:repeat value="{!octClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var octClosedopps = octClosedopps.split('?');
+    octClosedopps.pop();
+    
+    var octBestCaseopps = '<apex:repeat value="{!octBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var octBestCaseopps = octBestCaseopps.split('?');
+    octBestCaseopps.pop();
+    
+    var octPipelineopps = '<apex:repeat value="{!octPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var octPipelineopps = octPipelineopps.split('?');
+    octPipelineopps.pop();
+    
+    var octOmittedopps = '<apex:repeat value="{!octOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var octOmittedopps = octOmittedopps.split('?');
+    octOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* November  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var novopps = '<apex:repeat value="{!novopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var novopps = novopps.split('?');
+    novopps.pop();
+    
+    var novClosedopps = '<apex:repeat value="{!novClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var novClosedopps = novClosedopps.split('?');
+    novClosedopps.pop();
+    
+    var novBestCaseopps = '<apex:repeat value="{!novBestCaseopps}" var="o"><input type="hidden" id="bestcaseId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var novBestCaseopps = novBestCaseopps.split('?');
+    novBestCaseopps.pop();
+    
+    var novPipelineopps = '<apex:repeat value="{!novPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var novPipelineopps = novPipelineopps.split('?');
+    novPipelineopps.pop();
+    
+    var novOmittedopps = '<apex:repeat value="{!novOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var novOmittedopps = novOmittedopps.split('?');
+    novOmittedopps.pop();
+    
+     //  ************* ************* ************* ************* ************* ************* *********************
+    //  ************* ************* ************* December  ************* ************* ************* ************
+    //  ************* ************* ************* ************* ************* ************* *********************
+    
+    var decopps = '<apex:repeat value="{!decopps}" var="o"><input type="hidden" id="commitId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var decopps = decopps.split('?');
+    decopps.pop();
+    
+    var decClosedopps = '<apex:repeat value="{!decClosedopps}" var="o"><input type="hidden" id="closedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var decClosedopps = decClosedopps.split('?');
+    decClosedopps.pop();
+    
+    var decBestCaseopps = '<apex:repeat value="{!decBestCaseopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var decBestCaseopps = decBestCaseopps.split('?');
+    decBestCaseopps.pop();
+    
+    var decPipelineopps = '<apex:repeat value="{!decPipelineopps}" var="o"><input type="hidden" id="pipelineId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var decPipelineopps = decPipelineopps.split('?');
+    decPipelineopps.pop();
+    
+    var decOmittedopps = '<apex:repeat value="{!decOmittedopps}" var="o"><input type="hidden" id="omittedId" value="{!o.id}"/><a class="linkClass" href="../{!o.id}"><i class="fa fa-external-link"></i></a><span class="onameClass">{!o.Owner.Name}</span><span class="anameClass"> {!o.Account.Name}</span> <span class="prodClass"> {!o.Product__c} </span> <span class="dateClass"> <apex:outputText value=" {!o.SS_Close_Date_Forecast__c}"> </apex:outputText> </span> <span class="inputClass"> ${!o.Amount} </span> <span class="forenameClass">{!o.SS_Forecast_Category_Name_Management__c}</span><input type="text" class="amountVar" onkeypress="updateAmount(event,this)" value="{!o.SS_Amount_Forecast__c}"/><span class="mobile_edit"><i class="fa fa-tasks"></i></span>?</apex:repeat>';
+    var decOmittedopps = decOmittedopps.split('?');
+    decOmittedopps.pop();
+    
+
+
+
+    $(document).ready( function() {
+
+        
+             if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < opps.length; i++) {
+                    $('#January .commit').parent().append('<li class="ui-state-default">' + opps[i] + '</li>');
+                    console.log('January committed opps li appended');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < Closedopps.length; i++) {
+                    $('#January .closed').parent().append('<li class="ui-state-default">' + Closedopps[i] + '</li>');
+                    console.log('January closed opps li appended');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < BestCaseopps.length; i++) {
+                    $('#January .bestcase').parent().append('<li class="ui-state-default">' + BestCaseopps[i] + '</li>');
+                    console.log('January bestcase opps li appended');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < Pipelineopps.length; i++) {
+                    $('#January .pipeline').parent().append('<li class="ui-state-default">' + Pipelineopps[i] + '</li>');
+                    console.log('January pipeline opps li appended');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < Omittedopps.length; i++) {
+                    $('#January .omitted').parent().append('<li class="ui-state-default">' + Omittedopps[i] + '</li>');
+                    console.log('January omitted opps li appended');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < fopps.length; i++) {
+                    $('#February .commit').parent().append('<li class="ui-state-default">' + fopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < fClosedopps.length; i++) {
+                    $('#February .closed').parent().append('<li class="ui-state-default">' + fClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < fBestCaseopps.length; i++) {
+                    $('#February .bestcase').parent().append('<li class="ui-state-default">' + fBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < fPipelineopps.length; i++) {
+                    $('#February .pipeline').parent().append('<li class="ui-state-default">' + fPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < fOmittedopps.length; i++) {
+                    $('#February .omitted').parent().append('<li class="ui-state-default">' + fOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < mopps.length; i++) {
+                    console.log(opps[i]);
+                    $('#March .commit').parent().append('<li class="ui-state-default">' + mopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < mClosedopps.length; i++) {
+                    $('#March .closed').parent().append('<li class="ui-state-default">' + mClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < mBestCaseopps.length; i++) {
+                    $('#March .bestcase').parent().append('<li class="ui-state-default">' + mBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < mPipelineopps.length; i++) {
+                    $('#March .pipeline').parent().append('<li class="ui-state-default">' + mPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < mOmittedopps.length; i++) {
+                    $('#March .omitted').parent().append('<li class="ui-state-default">' + mOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < aopps.length; i++) {
+                    $('#April .commit').parent().append('<li class="ui-state-default">' + aopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < aClosedopps.length; i++) {
+                    $('#April .closed').parent().append('<li class="ui-state-default">' + aClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < aBestCaseopps.length; i++) {
+                    $('#April .bestcase').parent().append('<li class="ui-state-default">' + aBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < aPipelineopps.length; i++) {
+                    $('#April .pipeline').parent().append('<li class="ui-state-default">' + aPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < aOmittedopps.length; i++) {
+                    $('#April .omitted').parent().append('<li class="ui-state-default">' + aOmittedopps[i] + '</li>');
+                }
+            }
+            
+             /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < mayopps.length; i++) {
+                    $('#May .commit').parent().append('<li class="ui-state-default">' + mayopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < mayClosedopps.length; i++) {
+                    $('#May .closed').parent().append('<li class="ui-state-default">' + mayClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < mayBestCaseopps.length; i++) {
+                    $('#May .bestcase').parent().append('<li class="ui-state-default">' + mayBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < mayPipelineopps.length; i++) {
+                    $('#May .pipeline').parent().append('<li class="ui-state-default">' + mayPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < mayOmittedopps.length; i++) {
+                    $('#May .omitted').parent().append('<li class="ui-state-default">' + mayOmittedopps[i] + '</li>');
+                }
+            }
+            
+             /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < juneopps.length; i++) {
+                    $('#June .commit').parent().append('<li class="ui-state-default">' + juneopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < juneClosedopps.length; i++) {
+                    $('#June .closed').parent().append('<li class="ui-state-default">' + juneClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < juneBestCaseopps.length; i++) {
+                    $('#June .bestcase').parent().append('<li class="ui-state-default">' + juneBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < junePipelineopps.length; i++) {
+                    $('#June .pipeline').parent().append('<li class="ui-state-default">' + junePipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < juneOmittedopps.length; i++) {
+                    $('#June .omitted').parent().append('<li class="ui-state-default">' + juneOmittedopps[i] + '</li>');
+                }
+            }
+            
+             /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < julyopps.length; i++) {
+                    $('#July .commit').parent().append('<li class="ui-state-default">' + julyopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < julyClosedopps.length; i++) {
+                    $('#July .closed').parent().append('<li class="ui-state-default">' + julyClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < julyBestCaseopps.length; i++) {
+                    $('#July .bestcase').parent().append('<li class="ui-state-default">' + julyBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < julyPipelineopps.length; i++) {
+                    $('#July .pipeline').parent().append('<li class="ui-state-default">' + julyPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < julyOmittedopps.length; i++) {
+                    $('#July .omitted').parent().append('<li class="ui-state-default">' + julyOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < augopps.length; i++) {
+                    $('#August .commit').parent().append('<li class="ui-state-default">' + augopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < augClosedopps.length; i++) {
+                    $('#August .closed').parent().append('<li class="ui-state-default">' + augClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < augBestCaseopps.length; i++) {
+                    $('#August .bestcase').parent().append('<li class="ui-state-default">' + augBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < augPipelineopps.length; i++) {
+                    $('#August .pipeline').parent().append('<li class="ui-state-default">' + augPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < augOmittedopps.length; i++) {
+                    $('#August .omitted').parent().append('<li class="ui-state-default">' + augOmittedopps[i] + '</li>');
+                }
+            }
+            
+             /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < septopps.length; i++) {
+                    $('#September .commit').parent().append('<li class="ui-state-default">' + septopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < septClosedopps.length; i++) {
+                    $('#September .closed').parent().append('<li class="ui-state-default">' + septClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < septBestCaseopps.length; i++) {
+                    $('#September .bestcase').parent().append('<li class="ui-state-default">' + septBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < septPipelineopps.length; i++) {
+                    $('#September .pipeline').parent().append('<li class="ui-state-default">' + septPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < septOmittedopps.length; i++) {
+                    $('#September .omitted').parent().append('<li class="ui-state-default">' + septOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < octopps.length; i++) {
+                    $('#October .commit').parent().append('<li class="ui-state-default">' + octopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < octClosedopps.length; i++) {
+                    $('#October .closed').parent().append('<li class="ui-state-default">' + octClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < octBestCaseopps.length; i++) {
+                    $('#October .bestcase').parent().append('<li class="ui-state-default">' + octBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < octPipelineopps.length; i++) {
+                    $('#October .pipeline').parent().append('<li class="ui-state-default">' + octPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < octOmittedopps.length; i++) {
+                    $('#October .omitted').parent().append('<li class="ui-state-default">' + octOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < novopps.length; i++) {
+                    $('#November .commit').parent().append('<li class="ui-state-default">' + novopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < novClosedopps.length; i++) {
+                    $('#November .closed').parent().append('<li class="ui-state-default">' + novClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < novBestCaseopps.length; i++) {
+                    $('#November .bestcase').parent().append('<li class="ui-state-default">' + novBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < novPipelineopps.length; i++) {
+                    $('#November .pipeline').parent().append('<li class="ui-state-default">' + novPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < novOmittedopps.length; i++) {
+                    $('#November .omitted').parent().append('<li class="ui-state-default">' + novOmittedopps[i] + '</li>');
+                }
+            }
+            
+            /**************************************************************************************************************/
+            
+            if ($('.commit').html() == "Commit") {
+                 for (var i = 0; i < decopps.length; i++) {
+                    $('#December .commit').parent().append('<li class="ui-state-default">' + decopps[i] + '</li>');
+                }
+            }
+             if ($('.closed').html() == "Closed") {
+              for (var i = 0; i < decClosedopps.length; i++) {
+                    $('#December .closed').parent().append('<li class="ui-state-default">' + decClosedopps[i] + '</li>');
+                }
+            }
+             if ($('.bestcase').html() == "Best Case") {
+              for (var i = 0; i < decBestCaseopps.length; i++) {
+                      //alert('writing DEcemeber');
+                    $('#December .bestcase').parent().append('<li class="ui-state-default">' + decBestCaseopps[i] + '</li>');
+                }
+            }
+             if ($('.pipeline').html() == "Pipeline") {
+              for (var i = 0; i < decPipelineopps.length; i++) {
+                    $('#December .pipeline').parent().append('<li class="ui-state-default">' + decPipelineopps[i] + '</li>');
+                }
+            }
+             if ($('.omitted').html() == "Omitted") {
+              for (var i = 0; i < decOmittedopps.length; i++) {
+                    $('#December .omitted').parent().append('<li class="ui-state-default">' + decOmittedopps[i] + '</li>');
+                }
+            }
+
+        $('.expand-one').click(function(e){
+            $('#January').slideToggle('slow');
+            e.preventDefault();
+           
+        });
+         $('.expand-one1').click(function(e){
+            $('#February').slideToggle('slow');
+            e.preventDefault();
+           
+        });
+          $('.expand-one2').click(function(e){
+            $('#March').slideToggle('slow');
+            e.preventDefault();
+        
+        });
+           $('.expand-one3').click(function(e){
+            $('#April').slideToggle('slow');
+            e.preventDefault();
+         
+        });
+            $('.expand-one4').click(function(e){
+            $('#May').slideToggle('slow');
+            e.preventDefault();
+         
+        });
+             $('.expand-one5').click(function(e){
+            $('#June').slideToggle('slow');
+            e.preventDefault();
+         
+        });
+              $('.expand-one6').click(function(e){
+            $('#July').slideToggle('slow');
+            e.preventDefault();
+          
+        });
+               $('.expand-one7').click(function(e){
+            $('#August').slideToggle('slow');
+            e.preventDefault();
+        
+        });
+                $('.expand-one8').click(function(e){
+            $('#September').slideToggle('slow');
+            e.preventDefault();
+         
+        });
+                 $('.expand-one9').click(function(e){
+            $('#October').slideToggle('slow');
+            e.preventDefault();
+            
+        });
+                  $('.expand-one10').click(function(e){
+            $('#November').slideToggle('slow');
+            e.preventDefault();
+          
+        });
+         $('.expand-one11').click(function(e){
+            $('#December').slideToggle('slow');
+            e.preventDefault();
+           
+        });
+
+
+         /* Click events for Opp li's */
+        $('#MainContent').on('click', '.sortable .ui-state-default .mobile_edit', function(){ 
+            console.log('li clicked');
+            selectedOpp = $(this).parent();
+            selectedMonth = $(this).parent().parent().parent().parent().attr('id');
+            selectedCat = $(this).parent().parent().parent().attr('id');
+            selectedId = $(this).parent().find('input[type="hidden"]').val();
+            selectedAccount = $(this).parent().find('.anameClass').text();
+            selectedAmount = $(this).parent().find('input.amountVar').val();
+            selectedDate = $(this).parent().find('.dateClass').text();
+
+            if(selectedCat == 'BestCase') { 
+                selectedCat = 'Best Case'
+            }
+
+            console.log("This id: " + selectedId);
+            console.log("selectedMonth : " + selectedMonth);
+            console.log("selectedCat: " + selectedCat);
+            console.log("selectedAmount: " + selectedAmount);
+            console.log("selectedDate: " + selectedDate);
+
+            console.log("selectedOpp: ", selectedOpp);
+
+
+            $("#seleted_opp .seleted_id").html("Opp Id: " + selectedId);
+            $("#seleted_opp .seleted_acc").html("Account: " + selectedAccount);
+            $("#seleted_opp .seleted_cat").html("Category: " + selectedCat);
+            $("#seleted_opp .seleted_month").html("Month: " + selectedMonth);
+            $("#seleted_opp .seleted_amount").html("Forecast Amount: " + selectedAmount);
+
+            /* set up select values */
+            $('#dest_cat').val(selectedCat);
+            $('#dest_month').val(selectedMonth);
+
+            theUpdateCat = selectedCat;
+            theUpdateMonth = selectedMonth;
+
+            /* popup JS */
+            $('.edit_overlay').bPopup({
+                modal: true,
+                position: ['auto','0'],
+                opacity: 0.8,
+                transition: 'slideUp',
+                transitionClose: 'slideDown',
+            });   
+        });
+      
+      $('#dest_cat').on('change', function(){
+          console.log("onchange fireed");
+          theUpdateCat = $(this).val();
+          console.log("theUpdateCat: " + theUpdateCat);
+      });
+
+      $('#dest_month').on('change', function(){
+          console.log("onchange fireed");
+          theUpdateMonth = $(this).val();
+          console.log("theUpdateMonth: " + theUpdateMonth);
+      });
+
+
+      $('#update_opp_btn').on('click', function(){
+          console.log("update button clicked");
+          selectedDate = selectedDate.trim();
+          //console.log('solidId: ' +  solidId + ' statusToUpdate: ' + statusToUpdate + ' date: ' + dat + ' monthString: ' + monthString);
+          updateOpp(selectedId, theUpdateCat, selectedDate, theUpdateMonth);
+          if (theUpdateCat == 'Best Case') {
+              theUpdateCat = 'BestCase';
+          }
+
+          setTimeout(function() {  
+            $('.edit_overlay').bPopup().close(); 
+            selectedOpp.appendTo('#'+ theUpdateMonth + ' #'+ theUpdateCat  + ' .sortable');
+          }, 1000);
+
+          
+      });
+		
+      var isiPad = navigator.userAgent.match(/iPad/i) != null; 
+      console.log("isiPad OppForecastPage", isiPad);
+      if (isiPad == true){
+          $('.ui-state-default').on('click', 'a.linkClass', function(){
+                var toId = $(this).attr('href');
+                var toRemove = '..';
+                var toId = toId.replace(toRemove,'');
+                console.log("a clicked!!");
+                console.log("toId", toId);
+                sforce.one.navigateToURL(toId);
+            });
+      }
+      
+      var isMobile = navigator.userAgent.match(/iPhone|iPod|Android/i) != null;
+        console.log("isMobile OppForecastPage", isMobile);
+        if (isMobile == true){
+            $('.ui-state-default').on('click', '.anameClass', function(){
+                  var toId = $(this).parent().find('a.linkClass').attr('href');
+                  var toRemove = '..';
+                  var toId = toId.replace(toRemove,'');
+                  console.log("onameClass clicked!!");
+                  console.log("toId", toId);
+                  sforce.one.navigateToURL(toId);
+              });
+      }
+        
+   /*
+      	var mql = window.matchMedia("(orientation: landscape)");
+        // If there are matches, we're in portrait
+        if(mql.matches) {  
+            // Portrait orientation
+            console.log("portrait");
+        } else {  
+            // Landscape orientation
+            console.log("landscape");
+        } 
+        // Add a media query change listener
+        mql.addListener(function(m) {
+            if(m.matches) {
+                // Changed to portrait
+                console.log("Changed to portrait");
+            }
+            else {
+                // Changed to landscape
+                console.log("Changed to landscape");
+            }
+        });
+    */
+        
+});
+  /* End (document).ready() function */
+
+var monthe, test;
+
+var theUpdateMonth, theUpdateCat, theUpdateAmount, theUpdateDate;
+var selectedOpp, selectedId, selectedMonth, selectedAccount, selectedCat, selectedAmount, selectedDate;
+
+
+  $( ".spanClass" ).sortable({ disabled: true });
+  var solidId, uiItem;
+  
+  $(function() {
+        var oldList, newList, item, month, dat;
+        $('.sortable').sortable({
+            start: function(event, ui) {
+                item = ui.item;
+                uiItem = ui.item.children();
+                
+                dat = uiItem[5].innerHTML;
+                dat = dat.trim();
+                newList = oldList = ui.item.parent().parent();
+                month = ui.item.parent().parent().parent().attr('id');
+                           console.log('************ IN DRAG START NOW ************');  
+                var dragId = $(ui.item).attr('id');
+                //solidId = uiItem.children().eq(0).html();
+                console.log('solidId children: ' + uiItem.children());
+                test = uiItem.children();
+                //solidId = uiItem.children().eq(0).attr('value');
+                solidId = uiItem[0].value;
+                console.log(  typeof( uiItem.children().eq(0).attr('value')) + ': ' + uiItem.children().eq(0).attr('value') +  ' |||| ' + typeof( uiItem.children().eq(0).html()) + ' : ' + uiItem.children().eq(0).html());
+                console.log('solidId : ' + solidId);
+            },
+            stop: function(event, ui) {  
+            console.log('************ IN DRAG STOP NOW ************');         
+               console.log("Moved " + item.text() + " | from " + oldList.attr('id') + " to " + newList.attr('id'));
+               // console.log("Moved " + item.text() + " from element with id:  " + oldList.attr('id') + " to element with id:" + newList.attr('id'));
+                
+                var srcDivId = oldList.attr('id');
+                var  statusToUpdate =  newList.attr('id');
+                monthe = newList;
+                var monthString = monthe.parent().attr('id');
+                var Id = null;
+                
+                if ( statusToUpdate ==  'BestCase' ) { statusToUpdate = 'Best Case'; /*alert('bestcase string = ' + statusToUpdate);*/ } 
+                
+                if (srcDivId == "Commit")  {
+                    Id = $('#commitId').text();
+                    console.log('Id of draggable is : ' + Id);
+                    //console.log(srcDivId+' : '+Id);
+                 }
+                 
+                 if (srcDivId == "Closed")  {
+                     Id = $(' #jclosedId').text();
+                     console.log(srcDivId+' : '+Id);
+                 }
+                 
+                 if (srcDivId == "Pipeline")  {
+                     Id = $(' #jpipelineId').text();
+                      console.log(srcDivId+' : '+Id);
+                 }
+                 
+                 if (srcDivId == "BestCase")  {
+                      Id = $(' #jbestcaseId').text();
+                      console.log(srcDivId+' : '+Id);
+                 }
+                 
+                 if (srcDivId == "Omitted")  {
+                     Id = $(' #jomittedId').text();
+                      console.log(srcDivId+' : '+Id);
+                 }
+                 //if (    (srcDivId != statusToUpdate) && (uiItem.parent().parent().parent().parent().attr('id') != monthe.parent().attr('id')) ){
+                 console.log('solidId: ' +  solidId + ' statusToUpdate: ' + statusToUpdate + ' date: ' + dat + ' monthString: ' + monthString);
+                 updateOpp(solidId, statusToUpdate, dat, monthString);
+               //}
+            },
+            receive: function(event, ui) {
+        //alert("["  "] received [" + ui.item.html() + "] from [" + ui.sender.attr("id") + "]");
+            },
+            change: function(event, ui) {  
+                if(ui.sender) newList = ui.placeholder.parent().parent();
+            },
+            over : function(){
+              $(this).addClass('highlight_cell');
+            },
+            out : function(){
+              $(this).removeClass('highlight_cell');
+            },
+            connectWith: ".sortable",
+            cancel: '.spanClass'
+        }).disableSelection(); 
+        
+        $(".sortable").find("input")
+             .bind('mousedown.ui-disableSelection selectstart.ui-disableSelection', function(e) {
+              e.stopImmediatePropagation();
+            });
+        
+        
+    });
+    
+    function updateOpp(Id, status, d, m) {
+         console.log('date before exe: ' + d + ' and month is : ' + m);
+          SS_GetOpps_Ext.updateOpportunity(Id, status, d, m,
+                function(results, event) {
+                    if(event.type === 'exception'){
+                        console.log("exception");
+                        console.log(event);
+                        
+                    }
+                    else if(event.status){
+                            console.log('update: ' + results);
+                            /*if (monthe.attr('id') == 'BestCase') { uiItem[7].innerHTML = 'Best Case'; }
+                            else {
+                                uiItem[7].innerHTML = monthe.attr('id');
+                            }*/
+                            sayHello(); 
+                            //$('html, body').animate({ scrollTop: 0 }, 'slow');
+                       
+                        }
+                    
+                    else{
+                        console.log(event.message);
+                    }
+                }
+            );
+    }
+    
+
+    
+
+  </script>
+
+<!-- SF Tracking Code -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-54690696-1', 'salesforce.com');
+  ga('send', 'pageview');
+    
+  var _gaq = _gaq || [];
+
+    _gaq.push(['dos._setAccount', 'UA-54739173-1']);
+    _gaq.push(['dos._trackPageview']);
+    _gaq.push(['dos._trackEvent', 'Event Category', 'Event Action', 'Event Label']);
+    
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+    
+</head>
+<body>
+
+<div class="edit_overlay">
+    <div id="seleted_opp">
+        <div class="overlay_title">Selected Opp</div>       
+        <div class="seleted_acc"></div>
+        <div class="seleted_id"></div>
+        <div class="seleted_month"></div>
+        <div class="seleted_cat"></div>
+        <div class="seleted_amount"></div>
+    </div>
+    
+    <div class="update_opp_wrap">
+      <div class="overlay_title">Update Options</div>
+      <div class="dest_month">
+        <select id="dest_month">
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+      </div>
+
+      <div class="dest_cat">
+        <select id="dest_cat">
+            <option value="Closed">Closed</option>
+            <option value="Commit">Commit</option>
+            <option value="Best Case">Best Case</option>
+            <option value="Pipeline">Pipeline</option>
+            <option value="Omitted">Omitted</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div id="update_opp_btn"> Update Opp </div>
+</div>
+
+<div class="sf1-header">
+    <h1> Forecast Management </h1>
+</div>
+
+<apex:form >
+    <apex:actionFunction name="sayHello" action="{!sayHello}" rerender="theGraphs" status="myStatus"/>
+</apex:form>
+
+<!-- End sf1-weapper -->
+<div class="sf1-wrapper">
+  <apex:pageMessages />
+  <apex:outputPanel id="theGraphs" layout="block" styleClass="sf1-card">
+      <iframe src="/apex/SS_ForecastGraphsV3" style="width: 100%; min-height: 400px; border: none;" id="graphs" />
+  </apex:outputPanel> 
+
+
+  <div id="MainContent" class="sf1-card">
+
+  <p class="expand-one"><a href="#">January</a></p>
+  <div id="January" class="month_wrap">
+   <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+   <p class="expand-one1"><a href="#">February</a></p>
+   <div id="February" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one2"><a href="#">March</a></p>
+   <div id="March" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one3"><a href="#">April</a> </p>
+   <div id="April" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one4"><a href="#">May</a></p>
+   <div id="May" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one5"><a href="#">June</a> </p>
+   <div id="June" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one6"><a href="#">July</a> </p>
+   <div id="July" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one7"><a href="#">August</a> </p>
+   <div id="August" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one8"><a href="#">September</a> </p>
+   <div id="September" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one9"><a href="#">October</a> </p>
+   <div id="October" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one10"><a href="#">November</a></p>
+   <div id="November" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+   
+
+   <p class="expand-one11"><a href="#">December</a> </p>
+   <div id="December" class="month_wrap">
+    <ul class="headingList"><li>Owner</li><li class="li_account">Account</li><li>Product</li><li>Close Date</li><li>Amount</li><li>Category</li><li class="li_forecast">Forecast Amount</li><li class="li_edit">Edit</li></ul>
+   <div id="Closed">
+      <ul class="sortable">
+          <li class="spanClass closed" draggable="false">Closed</li>
+      </ul> 
+    </div> 
+        
+    <div id="Commit">    
+      <ul class="sortable">
+          <li class="spanClass commit" draggable="false">Commit</li>
+      </ul>
+     </div>
+     
+     <div id="BestCase"> 
+      <ul class="sortable">
+          <li class="spanClass bestcase" draggable="false">Best Case</li>
+      </ul> 
+      </div>
+      
+      <div id="Pipeline">
+      <ul class="sortable">
+          <li class="spanClass pipeline" draggable="false">Pipeline</li>
+      </ul>
+      </div>
+      
+      <div id="Omitted">
+      <ul class="sortable">
+          <li class="spanClass omitted" draggable="false">Omitted</li>
+      </ul>
+      </div>
+
+   </div>
+  </div> 
+
+</div> <!-- End sf1-weapper -->
+    
+
+</body>
+    
+</apex:page>

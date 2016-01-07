@@ -1,0 +1,406 @@
+<apex:page cache="false" showHeader="false" contentType="text/css">
+	
+	    @font-face {
+            font-family: ProximaNova;
+            src: url("{!URLFOR($Resource.SS_SF_Resources, '/font/ProximaNova-Reg.otf')}") format("opentype");
+        }
+        html {
+            font-size: 16px;
+        }
+        body {
+            margin:0;
+            padding:0;
+            font-family: ProximaNova;
+            background:#f0f1f2;
+        }
+        div#wrap {
+            width:100%;
+            height:100%;
+            margin: 0 auto;
+            background:#f0f1f2;
+            overflow: auto;
+            /* Ipad width */
+            max-width: 768px;
+        }
+        div#left {
+            float: left;
+            padding-left:  10px;
+            padding-right: 10px;
+        }
+        div#right {
+        	width: 100%;
+            display: none;
+            float: right;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        div#left, div#right {
+            box-sizing: border-box;
+            position:absolute;
+        }
+        h2 {
+            font-size: 1.0em;
+            margin:0;
+            position: relative;
+            top: 9px;
+            margin-left: 33px;  
+
+        }
+
+    /* Product Containers / Common */
+        div.prodWrap {
+            width:99%;
+            margin:0 auto;
+            position: relative;
+            background:#fff;
+            margin-bottom: 7px;
+            border: 1px solid #D6D6D6;
+            clear: both;
+            overflow: auto;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+        }
+
+        #topCont {
+            position: relative;
+        }
+
+        div.thumbHolder {
+            width: 20%;
+            float: left;
+            margin-bottom: 10px;
+        }
+        div.nameHolder {
+            width: 100%;
+            border-bottom:1px solid #f0f1f2;
+        }
+        div.headerSmall {
+            width: 100%;
+            clear:both;
+            color:#fff;
+            background: #fff;
+        }
+        .prodRightWrap {
+            width: 80%;
+            float: right;
+        }
+        /* Right */
+
+        /* Inputs */
+
+        span.desc {
+            display: block;
+            clear: both;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+        span.title {
+            display: block;
+            font-weight: 100;
+            color: #000;
+            padding: 14px;
+            font-size: 0.8rem;
+        }
+
+        input.qnt, input.qnt2, input.dis, input.uPrice{
+            width: 60px;
+            font-size: 0.9em;
+        }
+
+    /* END */
+
+   
+        .btn {
+            background: #2a94d6;
+            border: 0;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            text-align: center;
+            border-radius: 5px;
+            padding: 7px 15px 7px 15px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+            float: right;
+            width: 100%;
+            min-width:100px;
+        }
+        button.adder {
+            
+        }
+        button.update {
+
+        }
+        .famSel {
+            background: #344a5f;
+            color: #fff;
+            position: relative;
+            float: right;
+        }
+        img.preview {
+            width: 100%;
+            padding-left: 12px;
+            padding-right: 3px;
+            padding-top: 22px;
+            box-sizing: border-box;
+        }
+        .titleDiv {
+            width: 50%;
+            float: left;
+        }
+        .prodRightBottom {
+            padding-right: 3px;
+            padding-bottom: 3px;
+            clear: both;
+            float: right;
+        }
+        div.titleWrap {
+            background: #2a94d6;
+            height: 35px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+/* Header and Menu */    
+        div#mainHeader {
+            background: #FFFFFF;
+            height: 40px;
+            width: 100%;
+            color: #fff;
+            margin-bottom: 10px;
+            overflow: auto;
+        }
+        #headInner {
+            height: 40px;
+            position: relative;
+            width:100%;
+            max-width: 768px;
+            margin: 0 auto;
+            padding-left: 15px;
+            color: #000;
+            padding: 0px 10px 0px 10px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        #menu {
+            width: 100px;
+            height: 40px;
+            margin: 0 auto;
+            padding-top: 7px;
+        }
+        #arrow {
+
+        }
+        span.titleLogo {
+            font-size: 1rem;
+            position: relative;
+            top: 10px;
+            margin-left: 5px;
+        }
+        #leftRight {
+            position: relative;
+            top: -23px;
+            float: right;
+            cursor:pointer;
+        }
+/* Logo Top */
+        .icon {
+            background-color: #5a9cdd;
+            width: 25px;
+            height: 25px;
+            position: relative;
+            top: 7px;
+            border-radius: 3px;
+            float: left;
+        }
+        .icon img {
+            width: 100%;
+        }
+
+        img#swap {
+            float: right;
+            height: 40px;
+            cursor:pointer;
+        }
+
+/* End header */ 
+        
+        #msg span {
+            display: block;
+            text-align: center;
+            color: #344a5f;
+            font-weight: bold;
+            display: block;
+            position: absolute;
+            top: 9px;
+        }
+
+        div#msg {
+            display: none;
+            width: 45%;
+            /* min-width: 180px; */
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.91);
+            box-shadow: 10px 10px 5px #888888;
+            position: fixed;
+            margin-left: 50%;
+            left: -22%;
+            /* background-image: url("{!URLFOR($Resource.SS_SF_Resources, 'products/ui/env.png')}"); */
+            background-size: 40px;
+            background-position: top right 5px;
+            background-repeat: no-repeat;
+            z-index: 999;
+            padding: 3px;
+        }
+     
+        div.bottom {
+            background: #344a5f;
+            height: 30px;
+        }
+        div.bottom span.title {
+            color:#fff;
+            padding: 7px;
+        }
+        span.price {
+            font-weight: bolder;
+        }
+
+        table.lineTable {
+            float: right;
+            padding-right: 3px;
+            padding-left: 3px;
+            padding-bottom: 3px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table.upDel {
+
+        }
+        .bulkTxt {
+            margin-left: 3px;
+        }
+        #innerLeft {
+            float: left;
+        }
+        #innerLeft, #innerRight {
+            overflow: scroll;
+            /*height: 900px;*/
+            height: auto;
+        }
+
+        #bookWrap {
+            margin-bottom: 10px;
+            width: 100%;
+            min-height: 30px;
+        }
+
+        h2#curBook {
+            float: left;
+            margin-left: 2px;
+            margin-top: -3px;
+        }
+        #switch {
+            width: 30px;
+            float: right;
+            top: 5px;
+            position: relative;
+        }
+
+/* SF1 Styles */   
+
+        .sf1Pick {
+            font-size: 0.8rem;
+            border: 1px solid #BBC0C4;
+            border-radius: 5px;
+            color: black;
+            padding-left: 9px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 130px;
+            -webkit-appearance: none !important;
+            background-color: #fcfcfc !important;
+            box-shadow: 0 1px 0px rgba(0,0,0,.02),inset 0 0 0 1px rgba(255,255,255,.5) !important;
+            background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MHB4JyBoZWlnaHQ9JzUwcHgnPjxwb2x5bGluZSBwb2ludHM9JzQ2LjEzOSwxNS41MTggMjUuMTY2LDM2LjQ5IDQuMTkzLDE1LjUxOScvPjwvc3ZnPg==") !important;;
+
+            background-repeat: no-repeat !important;
+            background-position: right 10px top 5px !important;
+            background-size: 14px 14px !important;
+            background-color: #fff !important;
+            box-sizing: border-box;
+        }
+        /* has to be command link */
+        .sf1Btn {
+            border-radius: 3px !important;
+            -webkit-border-radius: 3px !important;
+            -moz-border-radius: 3px !important;
+            background: #fff !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: 1px solid #dfe0e1 !important;
+            padding: 4px !important;
+            color: #5c799e !important;
+            text-decoration: none;
+            width: 120px;
+            box-sizing: border-box;
+        }
+        .sf1Input {
+            color: #5c799e !important;
+            padding: 5px !important;
+            background: #fff !important;
+            border-radius: 3px !important;
+            border: 1px solid #dfe0e1 !important;
+            box-sizing: border-box;
+            margin:0;
+        }
+        .addBtn {
+            width: 141px !important;
+            background: #009bda !important;
+            color: #fff !important;
+        }   
+
+        .leftProd ,.rightProd {
+            width: 50%;
+            float: left;
+            min-height:150px;
+        }
+        .bulkTxt {
+            margin-left: 3px;
+        }
+
+
+/* Animate */
+    .pulsateClass {
+        -webkit-animation: pulsate 1s ease-out;
+        -webkit-animation-iteration-count: 1; 
+    }
+    @-webkit-keyframes pulsate {
+        0% {-webkit-transform: scale(1.0, 1.0); opacity: 1.0;}
+        50% {-webkit-transform: scale(1.1, 1.1); opacity: 0.7;}
+        100% {-webkit-transform: scale(1.0, 1.0); opacity: 1.0;}
+    }
+
+/* Mobile First and Up  */
+
+
+        @media only screen and (min-width: 640px) {
+
+            div#left {
+                width: 50%;
+                display: block !important; 
+                padding-right: 5px;
+                position:relative;
+            }
+            div#right {
+                width: 50%;
+                display: block !important;
+                padding-left: 5px;
+                position:relative;
+            }
+            #switch {
+                display: none;
+            }
+        } 
+
+</apex:page>

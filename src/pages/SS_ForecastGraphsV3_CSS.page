@@ -1,0 +1,271 @@
+<!--
+Copyright (c) 2014, salesforce.com, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    * Neither the name of the salesforce.com, Inc. nor the names of its contributors 
+    may be used to endorse or promote products derived from this software 
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<apex:page showHeader="false" contentType="text/css" >
+
+@font-face {
+    font-family: 'ProximaNovaRegular';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-reg-webfont.svg#ProximaNovaRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ProximaNovaLight';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-light-webfont.svg#ProximaNovaLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ProximaNovaSemiBold';
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.eot');
+    src: url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.woff') format('woff'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.ttf') format('truetype'),
+         url('https://www.sfdcstatic.com/cdn/fonts/ProximaNova/proximanova-sbold-webfont.svg#ProximaNovaSemiBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Load Animation */
+    #preloader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #fff;
+        z-index: 99999;
+    }
+
+    #status {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin: -100px 0 0 -100px;
+    }
+
+
+    .graph_wrapper { 
+        /* margin: 0 0 20px 0; */
+        max-width: 1100px; 
+        margin: 0 auto 20px auto;
+    }
+    .group::after { display: table; content: ""; clear: both; }
+    .chart { width: 100%; height: 260px; }
+    .graph_units { float: left; width: 49%; margin-right: 2%;  }
+    .graph_volume { float: left; width: 49%; }
+    .update_targets { margin: 0 auto; text-align: center; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 200; }
+
+    .update_targets input[type="submit"] { margin: 0 20px; }
+    /*
+    #visualization { float: left; height: 260px !important; width: 500px !important; }
+    #visualizationVol { float: left; height: 260px !important; width: 500px !important; }
+    */
+
+    h1, h2, h3, h4, h5, h6 { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .heading { background: rgb(65, 84, 105); padding: 1em; position: relative; }
+    .heading h2 { color: white; font-size: 1.3em; font-weight: 100; letter-spacing: 1px; }
+    .heading span { position: absolute; right: .7em; top: 25%; font-size: 22px; font-size: 20px; color: white; }
+
+    div#tabs {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .ui-tabs-nav {
+        margin-left: 8px;
+        padding: 0;
+        border-bottom: 1px solid #ddd;
+        margin: 0 auto 20px;
+    }
+
+    .ui-tabs-nav li {
+        list-style-type: none;
+        display: inline-block;
+        padding: 10px 25px;
+        background: #ddd;
+        margin: 0;
+    }
+    .ui-tabs-nav li a { text-decoration: none; }
+
+    .ui-state-active {
+        background: white !important;
+    }
+
+    .inner_p {max-width: 1100px;
+        margin: 0 auto 20px;} 
+
+
+        .update-btn-sf1 { display: none;}
+
+
+    /* Real Graphs */
+    #visualizationReal, #visualizationVolReal { display: none; }
+
+
+    /* Media Queries */
+
+    @media only screen and (max-width: 1180px) {
+        
+    }
+
+    @media only screen and (max-width: 960px) {
+        
+    }
+
+    @media only screen and (max-width: 767px) {
+        
+    }
+
+    @media only screen and (max-width: 480px) {
+        h1, h2, h3, h4, h5, h6 { font-family: ProximaNovaLight, Arial, sans-serif; }
+  
+        .graph_units, .graph_volume  { float: none; width: 100%; }
+        .update_targets { 
+            text-align: left;
+            position: relative;
+            height: 90px;
+            font-size: 14px;
+            font-family: ProximaNovaLight, Arial, sans-serif;
+            font-weight: 200;
+            margin-bottom: 1em;
+         }
+
+        .update_targets input[type="submit"] {
+            font-family: ProximaNovaSemiBold, Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #5c7995;
+            background-color: white !important;
+            border-color: #dfe0e1;
+            position: absolute;
+            bottom: 0;
+            left: 3%;
+            width: 94%;
+            margin: 0;
+            padding: .4em 0;
+        }
+
+        .update_targets input[type="text"] { border: 1px solid #dfe0e1; box-shadow: none; -webkit-appearance: none; }
+
+        .update-btn { display: none; }
+        .update-btn-sf1 { display: block; 
+            font-family: ProximaNovaSemiBold, Arial, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #5c7995;
+            background-color: white !important;
+            border: 1px solid;
+            border-color: #dfe0e1;
+            border-radius: 5px;
+            position: absolute;
+            bottom: 0;
+            left: 3%;
+            width: 94%;
+            margin: 0;
+            padding: .4em 0;
+            text-align: center;
+
+        }
+        .update_targets a {  color: #5c7995; text-decoration: none; }
+        .update_targets a:active, .update_targets a:hover {
+            color: #5c7995;
+            background: #edeff0 !important; 
+            text-decoration: none;
+        }
+
+        .targets-form {}
+        .t-units { position: absolute; left: 3%; top: 0; }
+        .t-units-val { position: absolute; right: 3%; top: 0; width: 50%;  }
+        
+        .t-vol-val { position: absolute; right: 3%; top: 25px; width: 50%; }
+        .t-vol { position: absolute; top: 25px; left: 3%; }
+
+    	.heading h2 { /*font-size: 1em; font-weight: 200;*/ letter-spacing: 0; }
+    }
+
+    @media only screen and (max-width: 320px) {
+        .graph_units, .graph_volume  { float: none; /*width: 100%; max-width: 320px;*/ width: 298px; }
+        .chart { width: 298px; }
+    }
+
+    
+    @media only screen 
+        and (min-device-width : 768px) 
+        and (max-device-width : 1024px)
+        and (-webkit-min-device-pixel-ratio: 2) { 
+    
+        /* STYLES GO HERE */
+        h1, h2, h3, h4, h5, h6 { font-family: ProximaNovaLight, Arial, sans-serif; }
+        .heading h2 { /* font-size: 1em; font-weight: 200;*/ letter-spacing: 0; }
+
+        .update_targets input[type="submit"] {
+            font-family: ProximaNovaSemiBold, Arial, sans-serif;
+        }
+
+        .update-btn { display: none; }
+        .update-btn-sf1 { 
+            display: inline-block; 
+            margin: 0 20px !important;
+            font-family: ProximaNovaSemiBold, Arial, sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            color: #5c7995;
+            background-color: white !important;
+            border: 1px solid;
+            border-color: #dfe0e1;
+            border-radius: 5px;
+            width: 200px;
+            margin: 0;
+            padding: .4em 0;
+            text-align: center;
+        }
+
+        .update_targets a {  color: #5c7995; text-decoration: none; }
+        .update_targets a:active, .update_targets a:hover {
+            color: #5c7995;
+            background: #edeff0 !important; 
+            text-decoration: none;
+        }
+
+        .update_targets input[type="text"] { border: 1px solid #dfe0e1; box-shadow: none; -webkit-appearance: none; }
+    }    
+    
+   
+    
+</apex:page>

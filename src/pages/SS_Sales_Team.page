@@ -1,0 +1,494 @@
+<!--
+    Copyright (c) 2014, salesforce.com, Inc.
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification,
+    are permitted provided that the following conditions are met:
+
+        * Redistributions of source code must retain the above copyright notice,
+        this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice,
+        this list of conditions and the following disclaimer in the documentation
+        and/or other materials provided with the distribution.
+        * Neither the name of the salesforce.com, Inc. nor the names of its contributors
+        may be used to endorse or promote products derived from this software
+        without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+    OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+    OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<apex:page showHeader="false" standardController="Opportunity" cache="false" standardStylesheets="true" extensions="SS_SalesTeamExt">
+    
+    <apex:includeScript value="/canvas/sdk/js/publisher.js" />
+    <apex:includeScript value="{!URLFOR($Resource.SS_SF_Resources, 'scripts/jquery1.11.js')}" />
+
+    <script>
+
+        $j = jQuery.noConflict();
+
+        function removeMem(memId) {
+            var elmWrap = $j('#wrap'+memId);
+
+            $j(elmWrap).slideUp(400);
+
+            SS_SalesTeamExt.removeMember(memId,function(result, event){
+                if(event.status){
+                    getTeam();
+                }
+                else {console.log('ERROR');}
+            },{escape:false});
+    
+        }
+
+        function toggle() {
+            console.log('Slide Toggle');
+            $j('.newInner').slideToggle(200);
+            var elm = $j('#plus');
+            $j(elm).toggleClass('rot');
+            
+            var elmList = $j('#bottomWrap');
+            if($j(elmList).hasClass('opac')) {
+                $j(elmList).removeClass('opac');
+            }else {
+                $j(elmList).addClass('opac');
+            }
+        }
+        function getPic(name) {
+            console.log('Get Pic, name = '+name);
+            if(name != '' || name != undefined) {
+                SS_SalesTeamExt.getPic(name,function(result, event){
+                    if(event.status){
+                        $j('#prev').html('<img src="'+result+'" class="prevThumb" />');
+                    }
+                    else {console.log('ERROR');}
+                },{escape:false});
+            }else {
+                $j('#prev').html('');
+            }
+        }
+        $j(document).ready(function () {
+            if ( (typeof sforce != 'undefined') && (sforce != null) ) {
+                console.log('Running in SF1');
+            }
+            else {
+                console.log('NOT Running in SF1');
+            }
+            Sfdc.canvas.publisher.publish({name: "publisher.setValidForSubmit", payload:"true"});
+                Sfdc.canvas.publisher.subscribe({name: "publisher.post", onData:function(e) {
+                console.log('Submit');
+                Sfdc.canvas.publisher.publish({name: "publisher.close", payload:{ refresh:"true"}});
+            }});
+
+            console.log('List')    
+
+            var salesTeam = '{!oppTeamList}';
+            console.log(salesTeam);
+            
+        });     
+    </script>
+
+    <style>
+        @font-face {
+            font-family: ProximaNova;
+            src: url("{!URLFOR($Resource.SS_SF_Resources, '/font/ProximaNova-Reg.otf')}") format("opentype");
+        }
+        body {
+            font-family: ProximaNova;
+            background: #f0f1f2;
+            margin: 0;
+            font-size: 13px;
+        }
+        div#mainHeader {
+            background: #FFFFFF;
+            height: 40px;
+            width: 100%;
+            color: #fff;
+            margin-bottom: 10px;
+            overflow: auto;
+        }
+        #headInner {
+            height: 40px;
+            position: relative;
+            width: 92%;
+            color: #000;
+            padding-left: 4%;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        span.titleLogo {
+            font-size: 1rem;
+            position: relative;
+            top: 10px;
+            margin-left: 5px;
+        }
+        /* Logo Top */
+        .icon {
+            background-color: #f2cf5b;
+            width: 25px;
+            height: 25px;
+            position: relative;
+            top: 7px;
+            border-radius: 3px;
+            float: left;
+        }
+        .icon img {
+            width: 100%;
+        }
+        #plus {
+            width: 25px;
+            display: block;
+            position: relative;
+            margin: 0 auto;
+            top: -12px;
+        }
+
+        .newInner {
+            display: none;
+            width: 92%;
+            margin: 0 auto;
+            overflow: auto;
+            position: relative;
+            box-sizing: border-box;
+        }
+        #bottomWrap {
+            overflow: auto;
+        }
+        .prevThumb {
+            margin-top: 5px;
+        }
+        div.memWrap {
+            border: 1px solid #cfd4d9;
+            background: #fff;
+            width: 92%;
+            margin-left: 4%;
+            clear: both;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+        div.inner {
+            padding: 5px;
+            overflow: visible;
+            position: relative;
+        }
+        table.cont {
+            float: left;
+            border-spacing: 5px 0px;
+        }
+        img.thumb {
+            width: 50px;
+        }
+        td.fade {
+            color: #797979;
+        }
+        td.bold {
+            color: #2a94d6;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .delBtn {
+            width: 21px;
+            cursor: pointer;
+            position: absolute;
+            right: -13px;
+            top: -13px;
+        }
+        .group:after {
+            display: table;
+            content:'';
+            clear: both;
+        }
+        .opac {
+            opacity:0.2;
+        }
+        .rot {
+            transform:rotate(45deg);
+            -ms-transform:rotate(45deg); 
+            -webkit-transform:rotate(45deg); 
+        }
+        .btnBottom {
+            height: 29px;
+            width: 100%;
+            background: #2a94d6;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            clear: both;
+            border-radius: 5px;
+        }
+        span#mid {
+            color: #fff;
+            text-decoration: none;
+            position: relative;
+            top: 5px;
+            font-size: 1.1em;
+        }
+        #prev {
+            float: right;
+        }
+        table#newTable {
+            float: left;
+        }
+        .flatPick {
+            font-size: 11px;
+            border: 1px solid #BBC0C4;
+            border-radius: 5px;
+            color: black;
+            padding-left: 9px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 130px;
+            -webkit-appearance: none !important;
+            background-color: #fcfcfc !important;
+            box-shadow: 0 1px 0px rgba(0,0,0,.02),inset 0 0 0 1px rgba(255,255,255,.5) !important;
+            background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MHB4JyBoZWlnaHQ9JzUwcHgnPjxwb2x5bGluZSBwb2ludHM9JzQ2LjEzOSwxNS41MTggMjUuMTY2LDM2LjQ5IDQuMTkzLDE1LjUxOScvPjwvc3ZnPg==") !important;;
+
+            background-repeat: no-repeat !important;
+            background-position: right 10px top 5px !important;
+            background-size: 14px 14px !important;
+            background-color: #fff !important;
+            box-sizing: border-box;
+        }
+/* LOOKUP */
+
+        .searchWrapper{
+            display:none;
+            position: fixed;
+            background-color: #f0f1f2;
+            top: 0;
+            left: 0;
+            bottom:0;
+            width: 100%;
+            height: 100%;
+            z-index:1000;
+            overflow: scroll;
+        }
+        .mySearchBox {
+            background-color: #E8EAEB;
+            padding: 7px 44px 7px 7px;
+            line-height: 25px;
+            width: 100%;
+            border: 1px solid #cfd0d2;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 2px rgba(0,0,0,.07);
+            box-sizing: border-box;
+        }
+        .myField {
+            color: #3c3d3e;
+            padding: 7px 14px;
+            line-height: 13px;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #cfd0d2;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 2px rgba(0,0,0,.07);
+            left: -3px;
+            position: relative;
+        }
+        .myTable {
+            width:100%;
+            background-color: #f0f1f2;
+        }
+        .myTable td {
+            padding:10px;
+            cursor:pointer;
+        }
+        .myTable tr:nth-child(even) {
+            background: rgb(235, 235, 235);
+        }
+        .myInputWrapper {
+            width: 130px;
+        }
+        .cancelButton {
+            color: #293f54;
+            font-family: 'ProximaNovaSoft-Regular';
+            font-size: 13px;
+            border: 1px solid #293f54;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 2px rgba(0,0,0,.07);
+            height: 30px;
+            margin: 7px;
+            padding: 0 14px 2px;
+            min-width: 0;
+            cursor: pointer;
+            text-align: center;
+            vertical-align: middle;
+            display: inline-block;
+            margin-top: 3px;
+            margin-left: 3px;
+        }
+        .cancelButton span {
+            position: relative;
+            top: 8px;
+        }
+        
+        .close{
+            color: #333;
+            margin: 1px;
+            padding: 2px 3px;
+            font-weight: bold;
+            font-size: 1.3em;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .myInputWrapper a{
+            display:none;
+        }
+        .errorMsg {
+            color:red !important;
+        }
+
+/* END */
+    </style>
+
+    <div id="mainHeader">
+        <div id="headInner">
+            <div class="icon">
+                <img src="{!URLFOR($Resource.SS_SF_Resources, 'teams/ui/group.png')}" />
+            </div>
+            <span class="titleLogo">Sales Team</span>
+                
+            <img onClick="toggle();" id="plus" src="{!URLFOR($Resource.SS_SF_Resources, '/teams/ui/plusBlack.png')}"/>
+        </div>
+    </div>
+
+    <div class="newInner group">
+        <apex:form id="inForm">
+            <table id="newTable">  
+                <tr>
+                    <td>User</td>
+                    <td>
+                        <apex:outputPanel id="outP">
+                            <div class="myInputWrapper">
+                                <table style="width:100%">
+                                    <tr>
+                                        <td style="width:100%;">
+                                            <apex:inputField onClick="showSearch();" value="{!oppMem.UserId}" id="field" styleClass="myField" />
+                                        </td>
+                                        <td onclick="clearValue();">
+                                            <button onclick="clearValue();" type="button" class="close" aria-hidden="true">&times;</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <!--<apex:inputField value="{!oppMem.UserId}" />-->
+                <tr>
+                    <td>Access</td>
+                    <td>
+                        <apex:selectList value="{!access}" multiselect="false" size="1" styleClass="flatPick">
+                            <apex:selectOptions value="{!AccessList}"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                <tr><td>Role</td><td><apex:inputField value="{!oppMem.TeamMemberRole}" styleClass="flatPick"/></td></tr>
+            </table>
+            
+            <div id="prev">
+
+            </div>
+            <!-- onclick="toggle();" -->
+            <apex:commandLink action="{!addMember}" styleClass="btnBottom" reRender="teamForm,inForm" onComplete="toggle();">
+                <span id="mid">Add</span>
+            </apex:commandLink> 
+        </apex:form>    
+    </div>
+
+    <div id="bottomWrap">
+        <apex:pageMessages />
+        <apex:form id="teamForm">
+            <apex:repeat value="{!oppTeamList}" var="tMem">
+                <div id="wrap{!tMem.Id}" class="memWrap group">
+                    <div class="inner">
+                        <table class="cont">
+                            <tr>
+                                <td><apex:image value="{!tMem.User.SmallPhotoUrl}" styleClass="thumb"/></td>
+                                <td class="bold">{!tMem.User.Name}</td>
+                            </tr>
+                            <tr>
+                                <td class="fade">Member Role</td>
+                                <td><apex:outputField value="{!tMem.TeamMemberRole}"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fade">Opportunity Access</td>
+                                <td><apex:outputField value="{!tMem.OpportunityAccessLevel}"/></td>
+                            </tr>       
+                        </table>
+                        <img class="delBtn" src="{!URLFOR($Resource.SS_SF_Resources, '/teams/ui/del.png')}" onclick="removeMem('{!tMem.Id}');" />
+                    </div>
+                </div>  
+            </apex:repeat>
+            <apex:actionFunction name="getTeam" action="{!getTeamList}"/>
+        </apex:form>
+    </div>  
+
+<!-- LOOKUP -->
+
+    <apex:form >
+        <div class="searchWrapper">
+            <div class="newHead">
+                <span onclick="hideSearch();" class="cancelButton">
+                    <span>&times;</span>
+                </span>
+            </div>
+            <apex:actionRegion >
+                <div>
+                    <apex:inputText id="theSearch" styleClass="mySearchBox" onKeyup="getValues();" value="{!filter}"/>
+                </div>
+                
+                <apex:actionFunction action="{!getTheValues}" name="getValues" rerender="myTable"/>
+                <apex:outputPanel id="myTable">
+                    <table class=" myTable table-responsive table-bordered">
+                        <apex:repeat value="{!myValues}" var="i">
+                            <tr>
+                               <td onclick="setValue('{!i.value}','{!i.label}');">
+                                   <span>{!i.label}</span>
+                               </td>
+                           </tr>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+            </apex:actionRegion>
+        </div>
+    </apex:form>    
+    <script>
+    
+        function showSearch() {
+            getValues();
+            $j('.searchWrapper').fadeIn("slow");
+            $j('.mySearchBox').focus();
+            
+        }
+        function hideSearch() {
+            $j('.searchWrapper').fadeOut("slow");
+        }
+        
+        function setValue(id,val) {
+            $j('.myField').val(val);
+            getPic(val);
+            hideSearch();
+            $j('#bottomWrap').focus();
+        }
+        function clearValue() {
+            $j('.myField').val('');
+            $j('#prev').html('');
+        }
+        
+  </script>
+
+
+</apex:page>

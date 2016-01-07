@@ -1,0 +1,25 @@
+<apex:page sideBar="true" showHeader="true">
+    
+    <apex:pageBlock title="High Level Configuration Steps">
+    <ul>
+    <li>Review the configuration guide.</li>
+    <li>Be sure you have deployed the Time-Off Manager package.</li>
+    <li>Create and activate approval processes.</li>
+    <li>Update profile settings for users and managers.</li>
+    <li>Update page layout settings for the Time-Off Request object.</li>
+    <li>Configure lookup tables.</li>
+    <li>Perform the sanity test detailed in the configuration guide.</li>
+    <li>Update templates and language to meet your needs.</li>
+    </ul>
+    </apex:pageBlock>
+    
+    
+
+    
+    <apex:pageBlock title="Detailed Configuration Guide">
+    
+    <ul><li><apex:outputLink value="https://sites.secure.force.com/appexchange/listingDetail?listingId=a0N300000016bX0EAI" >View on the AppExchange listing.</apex:outputLink></p></li></ul>
+    
+    </apex:pageBlock>
+        
+</apex:page>

@@ -1,0 +1,135 @@
+<apex:page id="Process_Pay_Cycle" standardController="Pay_Cycle__c" showHeader="false" sidebar="false">
+	<link  href="/sCSS/8.0/Theme2/default/common.css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet" type="text/css" />
+	<link  href="/css/assistive.css" media="aural,braille,embossed" rel="stylesheet" type="text/css" />
+	<link  href="/sCSS/8.0/Theme2/allCustom.css" media="handheld,print,projection,screen,tty,tv" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/js/functions.js"></script>
+    <script src="/soap/ajax/8.0/connection.js" type="text/javascript"></script>
+	<script src="/soap/ajax/8.0/apex.js" type="text/javascript"></script>
+
+	<apex:stylesheet value="{!URLFOR($Resource.Pay_Cycle, 'inc/css/pay_Cycle.css')}" />
+	
+	<script type="text/javascript">
+    
+    	var totalDays = 0;
+    	var remainingDays = 0;
+    	var type;
+    	var pay_cycle_proccessed_text;
+    	function setupPage(mode) {
+    	
+    		sforce.connection.sessionId = '{!$Api.Session_ID}';
+    		pay_cycle_proccessed_text = "{!JSENCODE(TEXT(Pay_Cycle__c.Processed__c))}";
+    		type = mode;
+    		
+    		if ((type == 'process' && pay_cycle_proccessed_text == "")) { 
+	    		//function contains all code to execute after page is rendered
+				var state = { //state that you need when the callback is called
+					output : document.getElementById("Process_Pay_Cycle:bodyDiv"),
+					startTime : new Date().getTime()
+				};
+				
+				var callback = {
+					//call layoutResult if the request is successful
+					onSuccess: layoutResults,
+					//call callailed if the api request fails
+					onFailure: callFailed,
+					source: state
+				}; 
+								
+				var endDateSfdc = '{!JSENCODE(TEXT(Pay_Cycle__c.End_Date__c))}';
+				
+				var soql;
+				if(type == 'process') soql = "Select count() from Requested_Day__c where (Pay_Cycle__c = null) and ((Time_Off_Request__r.Status__c = 'Approved') or (Time_Off_Request__r.Status__c = 'Processed')) and (Time_Off_Request__r.Payroll_System__c = '{!Pay_Cycle__c.Payroll_System__r.Id}') and (Requested_Day__c <= " + endDateSfdc + ") and (IsDeleted = false) and (Do_not_include_in_Pay_Cycle__c = false)";
+				else soql = "Select count() from Requested_Day__c where (Pay_Cycle__c = '{!Pay_Cycle__c.Id}')  and (IsDeleted = false)"
+				//do the query
+				sforce.connection.query(soql, callback);
+    			
+    			document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML = "Processing...";
+    				
+    		} else {
+				if(type == 'process') document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML="<h3>This Pay Cycle has already been processed, and must be reset before it can be processed again.<h3>";
+				else document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML="<h3>This Pay Cycle has not yet been processed, and so it cannot be reset.<h3>";				
+				document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML += "<div class=\"buttons\"><input type=\"button\" onclick=\"window.close();\" value=\"Close\" class=\"btn\"></div>";
+			}
+    	}
+    	
+    	function layoutResults(queryResult, source){
+    	
+   			totalDays = queryResult.size;
+   			
+   			if(totalDays == 0) {
+   				if(type == 'process') document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML =  "No approved requests within the date range for this pay cycle";
+   				else document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML =  "There are no processed requests to reset";
+   				document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML += "<div class=\"buttons\"><input type=\"button\" onclick=\"window.close();\" value=\"Close\" class=\"btn\"></div>";
+   			} else {
+   				document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML = totalDays + " Total Days To be Processed";
+				//now loop until we've processed them all
+				remainingDays = totalDays;
+				process();
+    		}
+    	}
+    	
+    	function process() {
+    	
+    		var state = { //state that you need when the callback is called
+				output : document.getElementById("Process_Pay_Cycle:bodyDiv"),
+				startTime : new Date().getTime()
+			};
+    		var callback = {
+				//call layoutResult if the request is successful
+				onSuccess: updateProgress,
+				//call callailed if the api request fails
+				onFailure: callFailed,
+				source: state
+			};
+			
+			var webServiceName = "reset_pay_cycle";
+    		if(type == 'process') webServiceName = "process_pay_cycle";
+    		sforce.apex.execute("pto_web_services", webServiceName, {a:"{!Pay_Cycle__c.Id}" },callback)
+
+    	}
+    	
+    	function updateProgress(result) {
+    	    remainingDays -= result;
+    		if(remainingDays > 0) window.setTimeout(process, 100); 
+    		else {
+							
+				if(type == 'process') document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML = "<h3>Pay Cycle has been successfully processed</h3>";
+				else document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML = "<h3>Pay Cycle has been successfully reset</h3>";
+				document.getElementById("Process_Pay_Cycle:bodyDiv").innerHTML += "<div class=\"buttons\"><input type=\"button\" onclick=\"window.close();\" value=\"Close\" class=\"btn\"></div>";
+    		}
+    	
+    	}
+    	
+    	function callFailed(error, source) {
+			source.output.innerHTML = "An error has occurred: " + error;
+    	}
+    	
+    </script>
+	
+	<apex:outputPanel id="detailPage" styleClass="customTab41 detailPage" layout="block">
+		<apex:outputPanel id="bodyProcessPayCycle" styleClass="bodyDiv" layout="block">
+			<apex:outputPanel id="bPageTitle" styleClass="bPageTitle" layout="block">
+				<apex:outputPanel id="ptBody" styleClass="ptBody secondaryPalette" layout="block">
+					<apex:outputPanel id="customContent" styleClass="customContent" layout="block">
+						<img src="/s.gif" alt="Pay Cycle" class="pageTitleIcon" title="Pay Cycle"/>
+						<h1 class="pageType">
+							Process Pay Cycle
+							<apex:outputPanel styleClass="titleSeparatingColon">:</apex:outputPanel>
+						</h1>
+	
+						<h2 class="pageDescription">
+							{!Pay_Cycle__c.Name}
+						</h2>
+					</apex:outputPanel>
+				</apex:outputPanel>
+			</apex:outputPanel>
+			<apex:outputPanel id="bodyDiv" styleClass="bodyDiv" layout="block">
+				<h3>Are you sure you want to process this Pay Cycle?</h3>
+				<apex:outputPanel id="buttons" styleClass="buttons" layout="block">
+					<input type="button" onclick="setupPage('process');" value="Yes" class="btn">&nbsp;
+					<input type="button" onclick="window.close();" value="No" class="btn">
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	</apex:outputPanel>
+</apex:page>

@@ -1,0 +1,260 @@
+<apex:page id="user_time_off_balance">
+	<link href="/dCSS/Theme2/default/common.css" type="text/css" media="handheld,print,projection,screen,tty,tv"  rel="stylesheet" >
+	<link href="/dCSS/Theme2/default/custom.css" type="text/css" media="handheld,print,projection,screen,tty,tv"  rel="stylesheet" >
+	<link  href="/css/assistive.css" media="aural,braille,embossed" rel="stylesheet" type="text/css" />
+ 	
+	<apex:stylesheet value="{!URLFOR($Resource.User_time_off_balance, 'inc/css/user_time_off_balance.css')}" />
+	
+	<style type="text/css" >
+		.font12 {font-size: 12}
+		.detailList {font-size: 12}
+		.ptBody {height:36px}
+		.pbTitle {height:19px}
+	</style>
+	
+	<script type="text/javascript" src="/js/functions.js"></script>
+	<script src="/soap/ajax/9.0/connection.js"></script>
+	<script src="/soap/ajax/9.0/apex.js"></script>
+	
+	<script>
+    	function redirect() {
+			var soql = "select Id from Time_Off_Info__c where User__c = '{!$User.Id}'";
+			var query_result = sforce.connection.query(soql);
+			var id = "";
+			if (query_result.size > 0) {
+				var records = query_result.getArray('records');
+				id = records[0].Id;
+				location = id;
+				parent.location = "/" + id;
+			} else {
+                   var scerr = "{! URLFOR( $Page.user_time_off_balance_err ) }";
+                   window.location = scerr;
+			}
+		}
+	
+ 		  function setupPage() {
+		    //function contains all code to execute after page is rendered
+			sforce.connection.sessionId = '{!$Api.Session_ID}';
+		    var state = { //state that you need when the callback is called
+		        startTime : new Date().getTime()};
+		
+		    var callback = {
+		        //call layoutResult if the request is successful
+		        onSuccess: layoutResults,  
+		
+		        //call queryFailed if the api request fails
+		        onFailure: queryFailed, 
+		        source: state};
+
+			sforce.apex.execute("pto_web_services", "get_time_off_info_for_current_user", {}, callback, false);
+		}
+		
+		function queryFailed(error, source) {
+			show_error();
+		}
+		
+		/**
+		* This method will be called when the toolkit receives a successful
+		* response from the server.
+		* @toi - result that server returned
+		* @source - state passed into the query method call.
+		*/
+		function layoutResults(toi, source) {
+		  if (toi == null) {
+		  	  show_error();
+		  } else {
+		  	  show_field("page_description", toi.User__r.Name);
+		  	  show_field("employee_number", toi.Name);
+		  	  show_field("employee_number", toi.Employee_Number__c);
+			  show_url("user", toi.User__c, toi.User__r.Name);
+		  	  show_url("payroll_system", toi.Payroll_System__c, toi.Payroll_System__r.Name);
+		  	  show_field("pto_accrued", toi.Total_PTO_Accrued__c);
+		  	  show_field("pto_pending", toi.Total_Pending_PTO_Requests__c);
+		  	  show_field("pto_available", toi.Total_PTO_Available__c);
+		  	  show_field("note", toi.Note__c);
+		  	  document.getElementById("user_time_off_balance:show_time_off_balance").style.visibility = "visible";
+		  }
+	  	  document.getElementById("user_time_off_balance:loading_time_off_balance").style.display = "none";
+		}
+		
+		function show_field(id, value) {
+			if (value == null) {
+				value = "Not Available";
+			}			
+			if ((id != null) && (document.getElementById(id) != null)) {
+				document.getElementById(id).innerHTML = value;
+			}
+		}
+		
+		function show_url(id, sfdc_id, name) {
+			new_html = "<a href=\"javascript:go_to_url(\'https://" + document.domain + "/" + sfdc_id + "\')\">" + name + "</a>";
+			show_field(id, new_html);
+		}
+		
+		function go_to_url(url) {
+			parent.location = url;
+		}
+		
+		function show_error() {
+        	 var scerr = "{! URLFOR( $Page.user_time_off_balance_err ) }";
+        	 window.location = scerr;
+		}
+	</script>
+	
+	<apex:outputPanel id="detailPage" styleClass="panel custom customTab16  detailPage" layout="block">
+   		<!-- <iframe title="blank - ignore" name="div_submit" id="div_submit" src="/s.gif" style="display: none; visibility: hidden; width: 0px; height: 0px;" frameborder="0"></iframe> -->
+        <apex:outputPanel id="loading_time_off_balance" layout="block">
+            <table width="100%">
+                <tr>
+                    <td align="center">
+                        <apex:outputPanel id="moduleTitle" styleClass="moduleTitle">
+                        	Retrieving Time-Off Balance...
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <tr>
+                      <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="center"><img src="/img/waiting_dots.gif"></td>
+                </tr>
+            </table>
+		</apex:outputPanel>
+		<apex:outputPanel styleclass="font12"  id="show_time_off_balance" layout="block" style="visibility:hidden">
+		<!-- <table class="font12" width="100%" id="show_time_off_balance" border="0" cellspacing="0" cellpadding="0" > -->
+		<table width="100%" id="show_time_off_balance_table" border="0" cellspacing="0" cellpadding="0" >
+			<tbody>
+				<tr>
+					<td class="oRight" id="bodyCell">
+						<!-- Start page content -->
+						<a name="skiplink">
+							<img src="/s.gif" alt="Content Starts Here" class="skiplink" title="Content Starts Here" height="1" width="1">
+						</a>
+						<apex:outputPanel id="bPageTitle" styleClass="bPageTitle" layout="block">
+							<apex:outputPanel id="ptBody" styleClass="ptBody secondaryPalette" layout="block">
+								<apex:outputPanel id="content" styleClass="content" layout="block">
+									<img src="/s.gif" alt="Time-Off Balances"  class="pageTitleIcon" title="Time-Off Balances"/>
+									<h1 class="pageType">
+										My Time-Off Balance
+										<apex:outputPanel styleClass="titleSeparatingColon">:</apex:outputPanel>
+									</h1>
+									<h2 class="pageDescription">Summary</h2>
+									<apex:outputPanel styleClass="blank">&nbsp;</apex:outputPanel>
+								</apex:outputPanel>
+								<apex:outputPanel id="links" styleClass="links" layout="block">
+									<a href="javascript:openPopupFocusEscapePounds('http://wiki.apexdevnet.com/index.php/Time_Off_Manager_User_Guide', 'Help', 700, 600, 'width=700,height=600,resizable=yes,toolbar=yes,status=no,scrollbars=yes,menubar=yes,directories=no,location=no,dependant=no', false, false);" title="Help for this Page (New Window)">
+										<apex:outputPanel styleClass="helpLink">Help for this Page</apex:outputPanel>
+										<img src="/s.gif" alt="Help"  class="helpIcon" title="Help"/>
+									</a>
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+				
+						<apex:outputPanel id="ep" styleClass="bPageBlock secondaryPalette" layout="block">
+							<apex:outputPanel id="pbHeader" styleClass="pbHeader" layout="block">
+								<table border="0" cellpadding="0" cellspacing="0" class="font12">
+									<tbody>
+										<tr>
+											<td class="pbTitle">
+												<img src="/s.gif" alt="" class="minWidth" title="" height="1" width="1">
+												<h2 class="mainTitle">Time-Off Balances Detail</h2>
+											</td>
+									</tbody>
+								</table>
+							</apex:outputPanel>
+							<apex:outputPanel id="pbBody" styleClass="pbBody" layout="block">
+								<apex:outputPanel id="pbSubsection" styleClass="pbSubsection" layout="block">
+									<table class="detailList" border="0" cellpadding="0" cellspacing="0">
+										<tbody>
+											<tr>
+												<td class="labelCol">Employee Number</td>
+												<td class="dataCol col02" id="employee_number"></td>
+												<td class="labelCol">Employee Number</td>
+												<td class="dataCol" id="employee_number"></td>
+											</tr>
+											<tr>
+												<td class="labelCol last">User</td>
+												<td class="dataCol col02 last" id="user"></td>
+												<td class="labelCol last">Payroll System</td>
+												<td class="dataCol last" id="payroll_system"></td>
+											</tr>
+										</tbody>
+									</table>
+								</apex:outputPanel>
+								<apex:outputPanel id="pbSubheader" styleClass="pbSubheader tertiaryPalette" layout="block">
+									<h3>
+										Time-Off Balance Information
+										<apex:outputPanel styleClass="titleSeparatingColon">:</apex:outputPanel>
+									</h3>
+								</apex:outputPanel>
+								<apex:outputPanel id="pbSubsectionBalance" styleClass="pbSubsection" layout="block">
+									<table class="detailList" border="0" cellpadding="0" cellspacing="0">
+										<tbody>
+											<tr>
+												<td class="labelCol">PTO Accrued</td>
+												<td class="dataCol col02" id="pto_accrued"></td>
+												<td class="labelCol">&nbsp;</td>
+												<td class="dataCol">&nbsp;</td>
+											</tr>
+											<tr>
+												<td class="labelCol">PTO Pending</td>
+												<td class="dataCol col02" id="pto_pending"></td>
+												<td class="labelCol">&nbsp;</td>
+												<td class="dataCol">&nbsp;</td>
+											</tr>
+											<tr>
+												<td class="labelCol last">PTO Available</td>
+												<td class="dataCol col02 last" id="pto_available"></td>
+												<td class="labelCol last">&nbsp;</td>
+												<td class="dataCol last"></td>
+											</tr>
+										</tbody>
+									</table>
+								</apex:outputPanel>
+							</apex:outputPanel>
+							<apex:outputPanel id="pbSubheaderNotes" styleClass="pbSubheader tertiaryPalette" layout="block">
+								<h3>
+									Notes
+									<apex:outputPanel styleClass="titleSeparatingColon">:</apex:outputPanel>
+								</h3>
+							</apex:outputPanel>
+							<apex:outputPanel id="pbSubsectionNotes" styleClass="pbSubsection" layout="block">
+								<table  class="detailList" border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="labelCol">Note</td>
+										<td class="data2Col" colspan="3" id="note"></td>
+									</tr>
+									<tr>
+										<td class="labelCol last">Custom Links</td>
+										<td class="data2Col last" colspan="3">
+											<table  class="customLinks" border="0" cellpadding="0" cellspacing="0">
+												<tr class="first">
+													<td>
+														<apex:outputPanel styleClass="bullet">&#8226;</apex:outputPanel>
+														<a style="font-size:12" href="javascript:window.location='{! URLFOR( $Page.Text_Accrual_Schedule ) }'" onblur="self.status=' ';return true;" onfocus="self.status='{! URLFOR( $Page.Text_Accrual_Schedule ) }';return true;" onmouseout="self.status=' ';return true;" onmouseover="self.status='{! URLFOR( $Page.Text_Accrual_Schedule ) }';return true;" title="View Time-Off Accrual Schedule">
+														<!--<a style="font-size:12" href="" onblur="" onfocus="" onmouseout="self.status=' ';return true;" onmouseover="" title="View Time-Off Accrual Schedule">-->
+															View Time-Off Accrual Schedule
+														</a>
+													</td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</apex:outputPanel>
+							<apex:outputPanel id="pbFooter" styleClass="pbFooter secondaryPalette" layout="block">
+								<apex:outputPanel id="bg" styleClass="bg" layout="block">
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</apex:outputPanel>
+						<!-- End page content -->
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</apex:outputPanel>
+		<script> setupPage()</script>
+	</apex:outputPanel>
+</apex:page>

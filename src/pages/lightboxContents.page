@@ -1,0 +1,38 @@
+<apex:page controller="lightboxContentsController" showHeader="false" cache="false">
+<apex:stylesheet value="{!URLFOR($Resource.micropage)}" />
+  <!-- <form name="dlgForm" method="POST" action="{!pathVar}/leadsubmit" onsubmit="return formCheck(this)"> -->
+  <apex:outputPanel layout="block" id="inputArea">
+	  <apex:form id="newLead" rendered="{!showforms}">
+	  
+	  <table>
+	    <tr>
+	      <td><label for="firstname">First Name:</label></td>
+	      <td><apex:inputText value="{!firstName}" disabled="{!showThankYou}" required="true"/></td>
+	    </tr>
+	    <tr>
+	      <td><label for="lastname">Last Name:</label></td>
+	      <td><apex:inputText value="{!lastName}" disabled="{!showThankYou}" required="true"/></td>
+	    </tr>
+	    <tr>
+	      <td><label for="company">Company:</label></td>
+	      <td><apex:inputText value="{!company}" disabled="{!showThankYou}" required="true"/></td> 
+	    </tr>
+	    <tr>
+	      <td><label for="phone">Phone:</label></td>
+	      <td><apex:inputText value="{!phone}" disabled="{!showThankYou}" required="true"/></td>
+	    </tr>
+	    <tr>
+	      <td><label for="email">Email:</label></td>
+	      <td><apex:inputText value="{!email}" disabled="{!showThankYou}" required="true"/></td>
+	    </tr>
+	    <tr>
+	      <td><apex:commandButton disabled="{!showThankYou}" action="{!makeNewLead}" value="Submit" id="submitButton" reRender="inputArea"/></td>
+	    </tr>
+	  </table>
+	  </apex:form>
+  
+	  <apex:outputPanel id="thankYouText" layout="block" rendered="{!showThankYou}">
+	    You information has been submitted. Someone will be contacting you soon. Thank you!
+	  </apex:outputPanel>
+  </apex:outputPanel>
+</apex:page>

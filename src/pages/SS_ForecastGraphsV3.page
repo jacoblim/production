@@ -1,0 +1,211 @@
+<!--
+Copyright (c) 2014, salesforce.com, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+    this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+    * Neither the name of the salesforce.com, Inc. nor the names of its contributors 
+    may be used to endorse or promote products derived from this software 
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<apex:page controller="SS_ForecastGraphsContV3" showHeader="false" sidebar="false">
+<apex:pageMessages />
+
+
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" type="text/css" href="/apex/SS_ForecastGraphsV3_CSS" />
+
+    
+    <script type="text/javascript" src="https://www.google.com/jsapi">
+    </script>
+    
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['corechart']});
+    </script>
+    
+    <script type="text/javascript">
+
+      var unitToggleCounter = 0;
+      var volToggleCounter = 0;
+        
+
+       // Draw Units Graph
+      function drawVisualizationUnits(mapDivId) {
+
+        // Create and populate the data table.        
+        var target = {!forecastTarget.SS_Target_Units__c};
+          console.log(typeof target);
+        if (target == null || target == 'undefined') { 
+           target = 0;
+        }else {
+            console.log('Target is defined');   
+        }    
+          
+        var data = google.visualization.arrayToDataTable([
+          ['Month', 'Closed',       			'Commit',        				'Best Case',       				'Pipeline',         			'Target'],
+          ['Jan',   {!janOpptys['Closed Num']},  {!janOpptys['Commit Num']},    {!janOpptys['Best Case Num']},  {!janOpptys['Pipeline Num']},    (target/12)*1],
+          ['Feb',   {!febOpptys['Closed Num']},  {!febOpptys['Commit Num']},    {!febOpptys['Best Case Num']},  {!febOpptys['Pipeline Num']},    (target/12)*2],
+          ['Mar',   {!marOpptys['Closed Num']},  {!marOpptys['Commit Num']},    {!marOpptys['Best Case Num']},  {!marOpptys['Pipeline Num']},    (target/12)*3],
+          ['Apr',   {!aprOpptys['Closed Num']},  {!aprOpptys['Commit Num']},    {!aprOpptys['Best Case Num']},  {!aprOpptys['Pipeline Num']},    (target/12)*4],
+          ['May',   {!mayOpptys['Closed Num']},  {!mayOpptys['Commit Num']},    {!mayOpptys['Best Case Num']},  {!mayOpptys['Pipeline Num']},    (target/12)*5],
+          ['Jun',   {!junOpptys['Closed Num']},  {!junOpptys['Commit Num']},    {!junOpptys['Best Case Num']},  {!junOpptys['Pipeline Num']},    (target/12)*6],
+          ['Jul',   {!julOpptys['Closed Num']},  {!julOpptys['Commit Num']},    {!julOpptys['Best Case Num']},  {!julOpptys['Pipeline Num']},    (target/12)*7],
+          ['Aug',   {!augOpptys['Closed Num']},  {!augOpptys['Commit Num']},    {!augOpptys['Best Case Num']},  {!augOpptys['Pipeline Num']},    (target/12)*8],
+          ['Sept',  {!sepOpptys['Closed Num']},  {!sepOpptys['Commit Num']},    {!sepOpptys['Best Case Num']},  {!sepOpptys['Pipeline Num']},    (target/12)*9],
+          ['Oct',   {!octOpptys['Closed Num']},  {!octOpptys['Commit Num']},    {!octOpptys['Best Case Num']},  {!octOpptys['Pipeline Num']},    (target/12)*10],
+          ['Nov',   {!novOpptys['Closed Num']},  {!novOpptys['Commit Num']},    {!novOpptys['Best Case Num']},  {!novOpptys['Pipeline Num']},    (target/12)*11],
+          ['Dec',   {!decOpptys['Closed Num']},  {!decOpptys['Commit Num']},    {!decOpptys['Best Case Num']},  {!decOpptys['Pipeline Num']},      target]
+        ]);
+      
+        // Create and draw the visualization.
+        var ac = new google.visualization.ComboChart(document.getElementById(mapDivId));
+        ac.draw(data, {
+          vAxis: {title: "Units"},
+          hAxis: {title: "Month"},
+          seriesType: "bars",
+          series: {4: {type: "line"}},
+          isStacked: true,
+          colors: ['#00E86B', '#8FE8C3', '#8FD5E8' ,'#415469', '#002B4F' ],
+          legend: { position: 'top' } 
+        });
+      }
+      
+
+      // Draw Volume Graph
+      function drawVisualizationVol(mapDivId) {
+
+        // Create and populate the data table.       
+        var target = {!forecastTarget.SS_Target_Volume__c};
+        if (target == null || target == 'undefined') { 
+           target = 0;
+        }
+          
+        var data = google.visualization.arrayToDataTable([
+            ['Month', 'Closed',       		  	 'Commit',        		 	  	'Best Case',       		  		'Pipeline',         			'Target'],
+            ['Jan',   {!janOpptys['Closed Vol']},  {!janOpptys['Commit Vol']},    {!janOpptys['Best Case Vol']},  {!janOpptys['Pipeline Vol']},    (target/12)*1],
+            ['Feb',   {!febOpptys['Closed Vol']},  {!febOpptys['Commit Vol']},    {!febOpptys['Best Case Vol']},  {!febOpptys['Pipeline Vol']},    (target/12)*2],
+            ['Mar',   {!marOpptys['Closed Vol']},  {!marOpptys['Commit Vol']},    {!marOpptys['Best Case Vol']},  {!marOpptys['Pipeline Vol']},    (target/12)*3],
+            ['Apr',   {!aprOpptys['Closed Vol']},  {!aprOpptys['Commit Vol']},    {!aprOpptys['Best Case Vol']},  {!aprOpptys['Pipeline Vol']},    (target/12)*4],
+            ['May',   {!mayOpptys['Closed Vol']},  {!mayOpptys['Commit Vol']},    {!mayOpptys['Best Case Vol']},  {!mayOpptys['Pipeline Vol']},    (target/12)*5],
+            ['Jun',   {!junOpptys['Closed Vol']},  {!junOpptys['Commit Vol']},    {!junOpptys['Best Case Vol']},  {!junOpptys['Pipeline Vol']},    (target/12)*6],
+            ['Jul',   {!julOpptys['Closed Vol']},  {!julOpptys['Commit Vol']},    {!julOpptys['Best Case Vol']},  {!julOpptys['Pipeline Vol']},    (target/12)*7],
+            ['Aug',   {!augOpptys['Closed Vol']},  {!augOpptys['Commit Vol']},    {!augOpptys['Best Case Vol']},  {!augOpptys['Pipeline Vol']},    (target/12)*8],
+            ['Sept',  {!sepOpptys['Closed Vol']},  {!sepOpptys['Commit Vol']},    {!sepOpptys['Best Case Vol']},  {!sepOpptys['Pipeline Vol']},    (target/12)*9],
+            ['Oct',   {!octOpptys['Closed Vol']},  {!octOpptys['Commit Vol']},    {!octOpptys['Best Case Vol']},  {!octOpptys['Pipeline Vol']},    (target/12)*10],
+            ['Nov',   {!novOpptys['Closed Vol']},  {!novOpptys['Commit Vol']},    {!novOpptys['Best Case Vol']},  {!novOpptys['Pipeline Vol']},    (target/12)*11],
+            ['Dec',   {!decOpptys['Closed Vol']},  {!decOpptys['Commit Vol']},    {!decOpptys['Best Case Vol']},  {!decOpptys['Pipeline Vol']},      target]
+        ]);
+      
+        // Create and draw the visualization.
+        var ac = new google.visualization.ComboChart(document.getElementById(mapDivId));
+        ac.draw(data, {
+          vAxis: {title: "Volume ($Mio)"},
+          hAxis: {title: "Month"},
+          seriesType: "bars",
+          series: {4: {type: "line"}},
+          isStacked: true,
+          colors: ['#00E86B', '#8FE8C3', '#8FD5E8' ,'#415469', '#002B4F' ],
+          legend: { position: 'top' } 
+        });
+      }
+
+      // DID NOT CALL THIS HERE - called in setTimeout function to allow Remote JS execute
+      //google.setOnLoadCallback(drawVisualization);
+    </script>
+    
+
+<!-- Preloader -->
+<div id="preloader">
+    <div id="status">
+        <div class="loader"> <img src="{!URLFOR($Resource.forecastResources,'/MexicanHat.gif')}" /> </div>
+    </div>
+</div>
+
+
+<!-- Graphs holder -->  
+<div class="graph_wrapper group">
+    <div class="graph_units">
+        <div class="heading"><h2>Target Units: {!forecastTarget.SS_Target_Units__c}</h2> </div>
+        <div id="visualization" class="chart"></div>
+    </div>
+    <div class="graph_volume">
+        <div class="heading"><h2>Target Volume($): {!forecastTarget.SS_Target_Volume__c}</h2> </div>
+        <div id="visualizationVol" class="chart"></div>
+    </div>    
+</div>
+<div class="update_targets">
+    <apex:form styleClass="targets-form">
+        <span class="t-units">Target Units</span> <apex:inputField value="{!forecastTarget.SS_Target_Units__c}" styleClass="t-units-val" />
+        <apex:commandLink value="Update Targets" action="{!updateTargets}" styleClass="update-btn-sf1" />
+        <apex:commandbutton value="Update Targets" action="{!updateTargets}" styleClass="update-btn" />
+        <apex:inputField value="{!forecastTarget.SS_Target_Volume__c}" styleClass="t-vol-val" /> <span class="t-vol">Target Volume</span>
+    </apex:form>
+</div>  
+
+<script src="{!URLFOR($Resource.SS_SF_Resources, '/scripts/jquery1.11.js')}" />   
+
+<script>
+    $(document).ready(function(){
+
+        var isiPad = navigator.userAgent.match(/iPad/i) != null;
+        console.log("isiPad", isiPad);
+
+        setTimeout(function() {
+              // Do something after 5 seconds
+
+              console.log("***************************");
+              console.log("In setTimeout function...");
+              console.log("***************************");
+
+              // Draw the graphs after timeout of 2000 milliseconds
+              drawVisualizationUnits('visualization');
+              drawVisualizationVol('visualizationVol');
+
+              // fade out loading gif
+              $("#status").fadeOut(); // will first fade out the loading animation
+              $("#preloader").delay(350).fadeOut("slow");
+        }, 2000);
+
+    
+    //if (isiPad == false){
+            $(window).resize(function(){
+                drawVisualizationUnits('visualization');
+                drawVisualizationVol('visualizationVol');
+            });
+    //}
+        
+    });
+</script>
+    
+<!-- Other Tracking Code -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-42382555-2', 'salesforce.com');
+  ga('send', 'pageview');
+
+</script>
+  
+</apex:page>

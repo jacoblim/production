@@ -1,0 +1,65 @@
+<apex:page controller="microPageController" showHeader="false" cache="false" >
+  <apex:stylesheet value="{!URLFOR($Resource.micropage)}" />
+<!-- LIGHT BOX REFERENCE -->
+  <c:lightbox function="signUp" width="350" msId="{!microId}" title="Request Call Back" pathVar="{!pathVar}/" content="<iframe src='{!pathVar}/lightboxContents?id={!userId}' id='theIframe' &gt;&lt;/iframe&gt;" duration="0" /> 
+<!-- END LIGHT BOX REFERENCE -->
+  <apex:outputPanel styleClass="wholePage" layout="block">
+
+    <!--BEGIN HEADER -->
+    <apex:sectionHeader >
+      <apex:outputLink value="/" id="homepageLink">
+        <apex:image id="headerImg" value="{!$Resource.header}" width="980" />
+      </apex:outputLink>
+    </apex:sectionHeader>
+    <!-- END HEADER -->
+    <!-- BEGIN BODY -->
+    <!-- BEGIN PICTURE AND CONTACT INFO -->
+    <apex:outputPanel styleClass="bodyOne" layout="block">
+      <apex:pageBlock >
+        <apex:outputPanel id="contactArea" layout="block">
+          <apex:pageBlockSection columns="1" Title="Contact Info"
+            id="contactPBS">
+            <apex:image id="contactImg" value="{!imageLink}" />
+            <apex:outputText value="{!msName}" />
+            <apex:outputText value="{!msTitle}" />
+            <apex:outputText value="{!msPhone}" />
+            <!-- BUTTON FOR LIGHTBOX   -->        
+            <apex:form id="lightBox" rendered="{!renderForm}">
+              <apex:commandbutton onclick="signUp();" value="Request Call Back" rerender="lightBox" />
+            </apex:form>            
+            <!--  END BUTTON FOR LIGHTBOX-->
+          </apex:pageBlockSection>
+        </apex:outputPanel>
+      </apex:pageBlock>
+    </apex:outputPanel>
+    <!-- END PICTURE AND CONTACT INFO -->
+    <!-- BEGIN BIO AND PERSONAL INFO -->
+    <apex:outputPanel styleClass="bodyTwo" layout="block">
+      <apex:pageBlock >
+        <apex:outputPanel id="bioArea" layout="block">
+          <apex:pageBlockSection columns="1" Title="About Me" id="bioPBS">
+            <br>
+            <apex:outputText styleClass="bioHead" value="Biography:"
+              style="headerPB" />
+            <apex:outputText value="{!msBiography}" />
+            <br>
+            <br>
+            <apex:outputText styleClass="bioHead" value="Peronal Information:"
+              style="headerPB" />
+            <apex:outputText value="{!msPersonalInfo}" />
+            </br>
+          </apex:pageBlockSection>
+        </apex:outputPanel>
+      </apex:pageBlock>
+    </apex:outputPanel>
+    <!-- END PERSONAL INFO -->
+    <!-- END BODY -->
+    <!--BEGIN FOOTER -->
+    <apex:sectionHeader >
+      <apex:outputLink value="/" id="footerLink">
+        <apex:image id="footerImg" value="{!$Resource.footer}" width="980" />
+      </apex:outputLink>
+    </apex:sectionHeader>
+    <!-- END FOOTER -->
+  </apex:outputPanel>
+</apex:page>

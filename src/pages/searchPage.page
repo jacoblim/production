@@ -1,0 +1,75 @@
+<apex:page controller="searchPageController" showHeader="false"
+  id="wholePage" cache="false">
+
+  <!-- Java script to make 'Return' act as search button /-->
+  <script>
+      function noenter(ev) 
+      {     
+         if (window.event && window.event.keyCode == 13 || ev.which == 13)
+         {
+            var ele=document.getElementById('{!$Component.searchButton}');
+            ele.click();
+            return false;
+         }
+         else
+         {
+            return true;
+         }
+      }
+   </script>
+
+  <apex:stylesheet value="{!URLFOR($Resource.searchPage)}" />
+  <apex:outputPanel styleClass="wholePage" layout="block">
+    <!--BEGIN HEADER -->
+    <apex:sectionHeader >
+      <apex:outputLink value="/" id="homepageLink">
+        <apex:image id="headerImg" value="{!$Resource.header}" width="980" />
+      </apex:outputLink>
+    </apex:sectionHeader>
+    <!-- END HEADER -->
+    <!-- BEGIN SEARCH AREA -->
+    <apex:outputPanel styleClass="searchArea" layout="block">
+      <apex:form id="searchForm">
+        <apex:pageblock >
+          <apex:pageBlockButtons >
+            <apex:commandButton id="searchButton" value="Search"
+              action="{!micropageSearch}" accesskey="return"
+              onkeypress="return noenter(event);" />
+          </apex:pageBlockButtons>
+          <apex:panelGrid columns="2" id="searchGrid">
+            <apex:outputText value="Search for Name or Zip Code:" />
+            <apex:inputText id="searchPhrase" value="{!searchPhrase}" />
+          </apex:panelGrid>
+        </apex:pageblock>
+      </apex:form>
+    </apex:outputPanel>
+    <!-- END SEARCH AREA -->
+    <!-- BEGIN CONTACT LIST -->
+    <apex:repeat value="{!smallMsClassList}" var="mc" id="contacts">
+      <apex:outputPanel styleClass="info" layout="block">
+        <apex:pageblock >
+          <apex:pageBlockSection columns="1" id="contactPBS">
+            <apex:outputPanel styleClass="imageSetup" layout="block">
+              <apex:outputLink value="{!pathVar}/micropage?id={!mc.id}" id="imgLink">
+                <apex:image id="Img" value="{!mc.photoLink}" />
+              </apex:outputLink>
+            </apex:outputPanel>
+            <apex:outputLink value="{!pathVar}/micropage?id={!mc.id}" id="nameLink">
+              <apex:outputText value="{!mc.name}" />
+            </apex:outputLink>
+            <apex:outputText value="{!mc.title}" />
+            <apex:outputText value="{!mc.phone}" />
+          </apex:pageBlockSection>
+        </apex:pageblock>
+      </apex:outputPanel>
+    </apex:repeat>
+    <!-- END CONTACT LIST -->
+    <!--BEGIN FOOTER -->
+    <apex:sectionHeader >
+      <apex:outputLink value="/" id="footerLink">
+        <apex:image id="footerImg" value="{!$Resource.footer}" width="960" />
+      </apex:outputLink>
+    </apex:sectionHeader>
+    <!-- END FOOTER -->
+  </apex:outputPanel>
+</apex:page>

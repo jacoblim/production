@@ -1,0 +1,3 @@
+<apex:page showHeader="true" sidebar="true">
+	<apex:iframe src="http://wiki.apexdevnet.com/index.php/Time_Off_Manager_User_Guide" scrolling="true" id="wikiTomIFrame"/>
+</apex:page>

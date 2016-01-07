@@ -1,0 +1,11 @@
+<apex:page controller="imageUpload" showHeader="true">
+  <apex:form id="theForm">
+    <apex:pageBlock title="Please Select a Photo you would like to Upload">
+      <apex:pageBlockSection >
+        <apex:inputFile value="{!file}" filename="{!fileName}"/><p/>
+          <apex:commandButton value="Save" action="{!save}"/>
+      </apex:pageBlockSection>
+    </apex:pageBlock>
+   
+   </apex:form>
+</apex:page>

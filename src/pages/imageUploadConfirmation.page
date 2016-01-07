@@ -1,0 +1,6 @@
+<apex:page controller="imageUploadConfirmationController" showHeader="false">
+  <p>{!message}</p>
+  <apex:image id="Image" value="/{!imageAddress}"/>
+                    
+
+</apex:page>

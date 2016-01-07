@@ -1,0 +1,264 @@
+<!--
+    Copyright (c) 2014, salesforce.com, Inc.
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification,
+    are permitted provided that the following conditions are met:
+
+        * Redistributions of source code must retain the above copyright notice,
+        this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice,
+        this list of conditions and the following disclaimer in the documentation
+        and/or other materials provided with the distribution.
+        * Neither the name of the salesforce.com, Inc. nor the names of its contributors
+        may be used to endorse or promote products derived from this software
+        without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+    OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+    OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<apex:page showHeader="false" cache="false" standardController="Opportunity" extensions="SS_QuoteCreatorExt" standardStylesheets="false">
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<script src="{!URLFOR($Resource.SS_SF_Resources, '/scripts/jquery1.11.js')}"/>
+<script src="{!URLFOR($Resource.SS_SF_Resources, '/scripts/jquery-ui-1.10.4.min.js')}"/>
+
+<link rel="stylesheet" type="text/css" href="/apex/SS_P_Q_Css" />
+
+<script>
+    $j = jQuery.noConflict();
+
+    function nav() {
+        window.location = "/apex/SS_QuoteList?id={!opp.Id}";
+    }
+
+    $j( document ).ready(function() {
+        var effect = 'slide';
+        var duration = 700;
+        $j('#switch').click(function() {
+            $j('#left').toggle(effect, { direction: 'left' }, duration);
+            $j('#right').toggle(effect, { direction: 'right' }, duration);
+        });
+    });
+
+
+    function addProduct(prodId) {
+        var quant = $j('#quant'+prodId).val();
+        quant=parseInt(quant);
+        console.log('Product id = '+prodId+' Quant = '+quant);
+
+        // String pBeId, Integer quant, String oppId
+        $j('#prodL'+prodId).addClass('pulsateClass');
+
+        SS_QuoteCreatorExt.addProduct(prodId,quant,'{!qId}',function(result, event){
+            if(event.status){
+                console.log('Product Added Result = '+result);
+                reRenLineItem();
+                
+                $j('#prodL'+prodId).removeClass('pulsateClass');
+                if(result == 'NO UPDATE') {
+                    displayMsg('Insufficient access to Update QuoteLineItem');
+
+                }else if(result == 'NO INSERT') {
+                    displayMsg('Insufficient access to Insert QuoteLineItem');
+                }    
+                else {
+                    $j('#quant'+prodId).val('1');
+                }
+            }
+            else {console.log('ERROR');}
+        },{escape:false});
+    }
+
+    function updateLineItem(itemId) {
+            var qty = $j('#qty'+itemId).val();
+            if(qty=='')qty=0.0;
+            else
+                qty=parseInt(qty);
+
+            var dis = $j('#dis'+itemId).val();
+            if(dis=='')dis=0.0;
+            else
+                dis=parseFloat(dis);
+
+            var uP = $j('#uP'+itemId).val();
+            if(uP=='')uP=0.0;
+            else
+                uP=parseFloat(uP);
+
+            $j('#prodA'+itemId).addClass('pulsateClass');
+
+            SS_QuoteCreatorExt.updateLineItem(itemId,qty,dis,uP,function(result, event){
+                if(event.status){
+                    console.log('Line item amended');
+                    reRenLineItem();
+                    $j('#prodA'+itemId).removeClass('pulsateClass');
+
+                    if(result == 'NO UPDATE') {
+                        displayMsg('Insufficient access to Update QuoteLineItem');
+                    }
+                }
+                else {console.log('ERROR');}
+            },{escape:false});
+        }
+
+        function deleteLineItem(itemId) {
+            console.log('Delete line item, id = '+itemId);
+
+            // Remove from Dom first to show effect
+            $j('#prodA'+itemId).fadeOut(1000, function() {
+                SS_QuoteCreatorExt.deleteLineItem(itemId,function(result, event){
+                    if(event.status){
+                        console.log('Line item deleted');
+                        //reRenLineItem();
+                        //displayMsg('Product Deleted');
+                        if(result == 'NO UPDATE') {
+                            displayMsg('Insufficient access to Delete QuoteLineItem');
+                        }
+                    }
+                    else {console.log('ERROR');}
+                },{escape:false});
+            });
+        }
+
+        function displayMsg(msg) {
+            $j("#msg span").html(msg);
+            $j("#msg").show();
+            $j("#msg").delay(4000).fadeOut();
+        }
+
+</script>   
+
+<style>
+    .icon {
+        background-color: #f56c10;
+    }
+    #arrow {
+        cursor: pointer;
+        width: 25px;
+        margin: 0 auto;
+        display: block;
+        top: -12px;
+        position: relative;
+        left: -14px;
+    }
+
+</style>
+
+    <div id="mainHeader">
+        <div id="headInner">
+            <div class="icon">
+                <img src="{!URLFOR($Resource.SS_SF_Resources, '/quotes/ui/quoteIcon.png')}" />
+            </div>
+            <span class="titleLogo">Quote Adjustment</span>
+            <img id="switch" src="{!URLFOR($Resource.SS_SF_Resources, 'common/leftRight.png')}" />
+        </div>
+    </div>
+    <div id="wrap">
+        <apex:pageMessages />
+
+        <div id="msg">
+            <span>Quote Created</span>
+        </div>
+        <div id="left">
+            <apex:form >
+                <apex:actionFunction name="reRen" rerender="prodPanel" status="myStatus" action="{!getProducts}"/>
+                <apex:outputPanel id="prodPanel">
+                    <div id="bookWrap">
+                        <h2 id="curBook">Price Book:{!opp.Pricebook2.Name}</h2>
+                        <apex:selectList value="{!fam}" size="1" onchange="reRen()" styleClass="famSel sf1Pick">
+                                <apex:selectOptions value="{!FamList}"/>
+                        </apex:selectList>
+                    </div>
+                    <div id="innerLeft">
+                        <apex:repeat value="{!bookEntryList}" var="p">
+                            <div id="prodL{!p.Id}" class="prodWrap">
+                                <div id="topCont">
+                                    <div class="headerSmall">
+                                        <div class="nameHolder">    
+                                            <span class="title pBe">{!p.Product2.Name} - Unit Price {!p.UnitPrice}</span>
+                                        </div>  
+                                    </div>
+                                    <div class="thumbHolder">
+                                        <img src="{!p.Product2.SS_URL_Image__c}" class="preview" />
+                                    </div>
+
+                                    <div class="prodRightWrap">
+                                        <div class="prodRightTop">
+                                            <span class="desc">
+                                                {!p.Product2.Description}
+                                            </span>
+                                        </div>
+                                           
+                                    </div> 
+                                </div>
+                                 <div class="prodRightBottom">    
+                                    <table style="margin-left: 3px;">
+                                        <tr>
+                                            <td>Qty</td>
+                                            <td><input class="qnt sf1Input" value="1" type="number" id="quant{!p.Id}"/></td>
+                                            <td><div class="btn" onClick="addProduct('{!p.Id}');">Add</div></td>
+                                        </tr>
+                                    </table>
+                                </div>              
+                            </div>
+                        </apex:repeat>
+                    </div>  
+                </apex:outputPanel> 
+            </apex:form>
+        </div>
+        <div id="right">
+            <apex:form >
+                <apex:actionFunction name="reRenLineItem" rerender="linePanel" status="myStatus" action="{!getLineItems}"/>
+                <apex:outputPanel id="linePanel">
+                    <apex:repeat value="{!LineList}" var="lI">
+                        <div id="prodA{!lI.Id}" class="prodWrap prodWrapRight">
+                            <div class="headerSmall">
+                                <div class="nameHolder">    
+                                    <span class="title">{!lI.PricebookEntry.Name}</span>
+                                </div>
+                            </div>
+                            <div class="thumbHolder">
+                                <img src="{!prodMap[lI.PricebookEntry.Product2Id].Product2.SS_URL_Image__c}" class="preview" />
+                            </div>
+                            <div class="prodRightWrap">
+                                <table class="lineTable">
+                                    <tr>
+                                        <td>List Price</td>
+                                        <td>{!lI.ListPrice}</td>
+                                        <td>Qty</td>
+                                        <td><input id="qty{!lI.Id}" class="qnt2 sf1Input" type="number" value="{!lI.Quantity}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sale Price</td>
+                                        <td><input id="uP{!lI.Id}" class="uPrice sf1Input" type="number" value="{!lI.UnitPrice}"/></td>
+                                        <td>Discount</td>
+                                        <td><input id="dis{!lI.Id}" class="dis sf1Input" type="number" value="{!lI.Discount}"/></td>
+                                    </tr>   
+                                    <tr>
+                                        <td COLSPAN="2"><div class="btn" onclick="deleteLineItem('{!lI.Id}');">Delete</div></td>
+                                        <td COLSPAN="2"><div class="btn" onclick="updateLineItem('{!lI.Id}');">Update</div></td>
+                                    </tr>   
+                                </table>
+                            </div>
+                            <div class="headerSmall bottom">
+                                <span class="title">Expected Revenue - {!lI.totalPrice}</span>
+                            </div>  
+                        </div>
+                    </apex:repeat> 
+                </apex:outputPanel>
+            </apex:form>    
+        </div>      
+    </div>        
+
+
+</apex:page>

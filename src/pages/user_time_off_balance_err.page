@@ -1,0 +1,59 @@
+<apex:page id="user_time_off_balance_err">
+
+	<link href="/dCSS/Theme2/default/common.css" type="text/css" media="handheld,print,projection,screen,tty,tv"  rel="stylesheet" >
+	<link href="/dCSS/Theme2/default/custom.css" type="text/css" media="handheld,print,projection,screen,tty,tv"  rel="stylesheet" >
+	
+	<apex:stylesheet value="{!URLFOR($Resource.User_time_off_balance_err, 'inc/css/user_time_off_balance_err.css')}" />
+	
+
+	<script type="text/javascript" src="/js/functions.js"></script>
+	
+	<title>Untitled Document</title>
+	
+	<apex:outputPanel id="overviewPage" styleClass="custom customTab16  overviewPage" layout="block">
+		<apex:outputPanel id="bPageTitle" styleClass="bPageTitle" layout="block">
+			<apex:outputPanel id="ptBody" styleClass="ptBody secondaryPalette" layout="block">
+				<apex:outputPanel id="content" styleClass="content" layout="block">
+					<img src="/s.gif" alt="Time-Off Balances"  class="pageTitleIcon" title="Time-Off Balances"/>
+					<h1 class="pageType">
+						My Time-Off Balance
+						<apex:outputPanel styleClass="titleSeparatingColon">:</apex:outputPanel>
+					</h1>
+					<h2 class="pageDescription">Error</h2>
+					<apex:outputPanel id="blank" styleClass="blank" layout="block">
+						&nbsp;
+					</apex:outputPanel>
+				</apex:outputPanel>
+				<apex:outputPanel id="links" styleClass="links" layout="block">
+					<a href="javascript:openPopupFocusEscapePounds('http://wiki.apexdevnet.com/index.php/Time_Off_Manager_User_Guide', 'Help', 700, 600, 'width=700,height=600,resizable=yes,toolbar=yes,status=no,scrollbars=yes,menubar=yes,directories=no,location=no,dependant=no', false, false);" title="Help for this Page (New Window)">
+					<span  class="helpLink">Help for this Page</span><img src="/s.gif" alt="Help"  class="helpIcon" title="Help"/></a>
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	
+		<apex:outputPanel id="bPageBlock" styleClass="bPageBlock secondaryPalette" layout="block">
+			<apex:outputPanel id="pbBody" styleClass="pbBody" layout="block">
+	
+					<apex:outputPanel id="pbSubsection" styleClass="pbSubsection" layout="block">
+						<apex:outputPanel id="faqtopic" styleClass="faqtopic" layout="block">
+							Error: Time-Off Balance record not found
+						</apex:outputPanel>
+						<table class="list" border="0" cellspacing="0" cellpadding="0" width="80%">
+							<tr>
+								<td>
+									Your time-off balance record could not be found.  
+									This generally means that your user record has not been 
+									configured for Time-Off Manager.<br><br>  
+									Log an IT ticket to request user activation.<br><br>
+								</td>
+							</tr>
+						</table>
+					</apex:outputPanel>			
+				<apex:outputPanel id="pbFooter" styleClass="pbFooter secondaryPalette" layout="block">
+					<apex:outputPanel id="bg" styleClass="bg" layout="block">
+					</apex:outputPanel>
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:outputPanel>
+	</apex:outputPanel>
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page showHeader="false" cache="false">
+<apex:stylesheet value="{!URLFOR($Resource.micropage)}" />
+<div id="confirm"><p>Thank you for your submission, you will be contacted soon.</p></div>
+</apex:page>
