@@ -18,7 +18,7 @@
     
     <apex:pageBlock title="Detailed Configuration Guide">
     
-    <ul><li><apex:outputLink value="https://sites.secure.force.com/appexchange/listingDetail?listingId=a0N300000016bX0EAI" >View on the AppExchange listing!!!</apex:outputLink></p></li></ul>
+    <ul><li><apex:outputLink value="https://sites.secure.force.com/appexchange/listingDetail?listingId=a0N300000016bX0EAI" >View on the AppExchange listing.</apex:outputLink></p></li></ul>
     
     </apex:pageBlock>
         
